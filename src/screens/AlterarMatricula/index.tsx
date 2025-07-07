@@ -1,0 +1,1 @@
+export { AlterarMatricula } from "./AlterarMatricula";
