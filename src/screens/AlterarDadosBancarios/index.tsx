@@ -1,1 +1,0 @@
-export { AlterarDadosBancarios } from "./AlterarDadosBancarios";

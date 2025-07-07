@@ -1,0 +1,1 @@
+export { CadastrarAlterarDadosBancarios } from "./CadastrarAlterarDadosBancarios";

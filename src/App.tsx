@@ -3,7 +3,7 @@ import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
 import { AlterarMatricula } from "./screens/AlterarMatricula";
 import { CadastrarUsuario } from "./screens/CadastrarUsuario";
 import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario"
-import { AlterarDadosBancarios } from "./screens/AlterarDadosBancarios";
+import { CadastrarAlterarDadosBancarios } from "./screens/CadastrarAlterarDadosBancarios";
 import { NovoCadastroReferencia } from "./screens/NovoCadastroReferencia";
 
 
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/alterar-dados-bancarios",
-    element: <AlterarDadosBancarios />,
+    element: <CadastrarAlterarDadosBancarios />,
   },
   {
     path: "/novo-cadastro-referencia",

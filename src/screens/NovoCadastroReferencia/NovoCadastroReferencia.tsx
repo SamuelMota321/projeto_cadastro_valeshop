@@ -13,15 +13,34 @@ type TableData = {
 export const NovoCadastroReferencia = (): JSX.Element => {
   const [departamento, setDepartamento] = useState("");
   const [tableData, setTableData] = useState<TableData[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  const resetFormAndExitEditing = () => {
+    setDepartamento("");
+    setEditingIndex(null);
+  };
   
-  const handleAddClick = () => {
+  const handleRegisterOrUpdateClick = () => {
     if (!departamento) {
       alert("Por favor, preencha o campo Departamento/Central de Custo.");
       return;
     }
     const newEntry: TableData = { departamento };
-    setTableData(prevData => [...prevData, newEntry]);
-    setDepartamento("");
+
+    if (editingIndex !== null) {
+      const updatedData = [...tableData];
+      updatedData[editingIndex] = newEntry;
+      setTableData(updatedData);
+    } else {
+      setTableData(prevData => [...prevData, newEntry]);
+    }
+    resetFormAndExitEditing();
+  };
+
+  const handleEditItem = (indexToEdit: number) => {
+    const item = tableData[indexToEdit];
+    setDepartamento(item.departamento);
+    setEditingIndex(indexToEdit);
   };
 
   const handleRemoveItem = (indexToRemove: number) => {
@@ -70,9 +89,14 @@ export const NovoCadastroReferencia = (): JSX.Element => {
                       <p className="text-sm text-gray-500 font-sans">Formatos aceitos: CSV (.csv) ou XLSX (.xlsx)</p>
                     </div>
                   </div>
-                  <div className="flex justify-end">
-                    <Button onClick={handleAddClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm transition-all font-sans">
-                      Registrar
+                  <div className="flex justify-end space-x-4">
+                     {editingIndex !== null && (
+                      <Button onClick={resetFormAndExitEditing} variant="outline" className="px-8 py-2 rounded-full font-normal text-sm">
+                        Cancelar
+                      </Button>
+                    )}
+                    <Button onClick={handleRegisterOrUpdateClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm transition-all font-sans">
+                      {editingIndex !== null ? "Salvar Alterações" : "Registrar"}
                     </Button>
                   </div>
                    <TemporaryDataTable
@@ -80,6 +104,7 @@ export const NovoCadastroReferencia = (): JSX.Element => {
                     data={tableData}
                     dataKeys={["departamento"]}
                     onRemoveItem={handleRemoveItem}
+                    onEditItem={handleEditItem}
                   />
                 </div>
               </div>

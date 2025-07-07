@@ -16,7 +16,7 @@ export const Nav = (): JSX.Element => {
       link: "#",
       hasArrow: true,
       submenu: [
-        { text: "Alterar dados bancários", link: "/alterar-dados-bancarios" },
+        { text: "CCadastrar/Alterar dados bancários", link: "/alterar-dados-bancarios" },
         { text: "Alterar referência", link: "/alterar-referencia" },
         { text: "Cadastrar usuário", link: "/cadastrar-usuario" },
       ],

@@ -14,26 +14,49 @@ type TableData = {
   digitoConta: string;
 };
 
-export const AlterarDadosBancarios = (): JSX.Element => {
+export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
   const [banco, setBanco] = useState("");
   const [agencia, setAgencia] = useState("");
   const [digitoAgencia, setDigitoAgencia] = useState("");
   const [conta, setConta] = useState("");
   const [digitoConta, setDigitoConta] = useState("");
   const [tableData, setTableData] = useState<TableData[]>([]);
-  
-  const handleAddClick = () => {
-    if (!banco || !agencia || !digitoAgencia || !conta || !digitoConta) {
-      alert("Por favor, preencha todos os dados bancários.");
-      return;
-    }
-    const newEntry: TableData = { banco, agencia, digitoAgencia, conta, digitoConta };
-    setTableData(prevData => [...prevData, newEntry]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  const resetFormAndExitEditing = () => {
     setBanco("");
     setAgencia("");
     setDigitoAgencia("");
     setConta("");
     setDigitoConta("");
+    setEditingIndex(null);
+  };
+  
+  const handleRegisterOrUpdateClick = () => {
+    if (!banco || !agencia || !digitoAgencia || !conta || !digitoConta) {
+      alert("Por favor, preencha todos os dados bancários.");
+      return;
+    }
+    const newEntry: TableData = { banco, agencia, digitoAgencia, conta, digitoConta };
+    
+    if (editingIndex !== null) {
+      const updatedData = [...tableData];
+      updatedData[editingIndex] = newEntry;
+      setTableData(updatedData);
+    } else {
+      setTableData(prevData => [...prevData, newEntry]);
+    }
+    resetFormAndExitEditing();
+  };
+
+  const handleEditItem = (indexToEdit: number) => {
+    const item = tableData[indexToEdit];
+    setBanco(item.banco);
+    setAgencia(item.agencia);
+    setDigitoAgencia(item.digitoAgencia);
+    setConta(item.conta);
+    setDigitoConta(item.digitoConta);
+    setEditingIndex(indexToEdit);
   };
 
   const handleRemoveItem = (indexToRemove: number) => {
@@ -51,7 +74,7 @@ export const AlterarDadosBancarios = (): JSX.Element => {
                 <Nav />
                 <div className="flex-1 px-8 py-6">
                   <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
-                    Alterar Dados Bancários
+                    Cadastra/Alterar Dados Bancários
                   </h1>
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div>
@@ -100,9 +123,14 @@ export const AlterarDadosBancarios = (): JSX.Element => {
                       <p className="text-sm text-gray-500 font-sans">Formatos aceitos: CSV (.csv) ou XLSX (.xlsx)</p>
                     </div>
                   </div>
-                  <div className="flex justify-end">
-                    <Button onClick={handleAddClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm transition-all font-sans">
-                      Registrar
+                  <div className="flex justify-end space-x-4">
+                    {editingIndex !== null && (
+                      <Button onClick={resetFormAndExitEditing} variant="outline" className="px-8 py-2 rounded-full font-normal text-sm">
+                        Cancelar
+                      </Button>
+                    )}
+                    <Button onClick={handleRegisterOrUpdateClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm transition-all font-sans">
+                      {editingIndex !== null ? "Salvar Alterações" : "Registrar"}
                     </Button>
                   </div>
                   <TemporaryDataTable
@@ -110,6 +138,7 @@ export const AlterarDadosBancarios = (): JSX.Element => {
                     data={tableData}
                     dataKeys={["banco", "agencia", "digitoAgencia", "conta", "digitoConta"]}
                     onRemoveItem={handleRemoveItem}
+                    onEditItem={handleEditItem}
                   />
                 </div>
               </div>

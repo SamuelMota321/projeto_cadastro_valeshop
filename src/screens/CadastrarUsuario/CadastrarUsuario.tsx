@@ -21,19 +21,42 @@ export const CadastrarUsuario = (): JSX.Element => {
   const [nascimento, setNascimento] = useState("");
   const [nomeMae, setNomeMae] = useState("");
   const [tableData, setTableData] = useState<TableData[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  const handleAddClick = () => {
-    if (!nome || !cpf || !telefone || !nascimento || !nomeMae) {
-      alert("Por favor, preencha todos os campos.");
-      return;
-    }
-    const newEntry: TableData = { nome, cpf, telefone, nascimento, nomeMae };
-    setTableData(prevData => [...prevData, newEntry]);
+  const resetFormAndExitEditing = () => {
     setNome("");
     setCpf("");
     setTelefone("");
     setNascimento("");
     setNomeMae("");
+    setEditingIndex(null);
+  };
+
+  const handleRegisterOrUpdateClick = () => {
+    if (!nome || !cpf || !telefone || !nascimento || !nomeMae) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+    const newEntry: TableData = { nome, cpf, telefone, nascimento, nomeMae };
+
+    if (editingIndex !== null) {
+      const updatedData = [...tableData];
+      updatedData[editingIndex] = newEntry;
+      setTableData(updatedData);
+    } else {
+      setTableData(prevData => [...prevData, newEntry]);
+    }
+    resetFormAndExitEditing();
+  };
+
+  const handleEditItem = (indexToEdit: number) => {
+    const item = tableData[indexToEdit];
+    setNome(item.nome);
+    setCpf(item.cpf);
+    setTelefone(item.telefone);
+    setNascimento(item.nascimento);
+    setNomeMae(item.nomeMae);
+    setEditingIndex(indexToEdit);
   };
 
   const handleRemoveItem = (indexToRemove: number) => {
@@ -100,9 +123,14 @@ export const CadastrarUsuario = (): JSX.Element => {
                       <p className="text-sm text-gray-500 font-sans">Formatos aceitos: CSV (.csv) ou XLSX (.xlsx)</p>
                     </div>
                   </div>
-                  <div className="flex justify-end">
-                    <Button onClick={handleAddClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm transition-all font-sans">
-                      Registrar
+                  <div className="flex justify-end space-x-4">
+                    {editingIndex !== null && (
+                      <Button onClick={resetFormAndExitEditing} variant="outline" className="px-8 py-2 rounded-full font-normal text-sm">
+                        Cancelar
+                      </Button>
+                    )}
+                    <Button onClick={handleRegisterOrUpdateClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm transition-all font-sans">
+                      {editingIndex !== null ? "Salvar Alterações" : "Registrar"}
                     </Button>
                   </div>
                   <TemporaryDataTable
@@ -110,6 +138,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     data={tableData}
                     dataKeys={["nome", "cpf", "telefone", "nascimento", "nomeMae"]}
                     onRemoveItem={handleRemoveItem}
+                    onEditItem={handleEditItem}
                   />
                 </div>
               </div>

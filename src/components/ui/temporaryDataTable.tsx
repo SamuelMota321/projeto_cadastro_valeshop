@@ -4,10 +4,11 @@ interface TemporaryDataTableProps {
   headers: string[];
   data: Record<string, any>[];
   dataKeys: string[];
-  onRemoveItem: (index: number) => void; // Nova propriedade para a função de remoção
+  onRemoveItem: (index: number) => void;
+  onEditItem: (index: number) => void; // Nova prop para a função de edição
 }
 
-export const TemporaryDataTable = ({ headers, data, dataKeys, onRemoveItem }: TemporaryDataTableProps): JSX.Element => {
+export const TemporaryDataTable = ({ headers, data, dataKeys, onRemoveItem, onEditItem }: TemporaryDataTableProps): JSX.Element => {
   const hasData = data.length > 0;
 
   return (
@@ -26,7 +27,6 @@ export const TemporaryDataTable = ({ headers, data, dataKeys, onRemoveItem }: Te
                     {header}
                   </th>
                 ))}
-                {/* Cabeçalho da nova coluna de Ações */}
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Ações
                 </th>
@@ -40,8 +40,15 @@ export const TemporaryDataTable = ({ headers, data, dataKeys, onRemoveItem }: Te
                        {item[key]}
                      </td>
                   ))}
-                  {/* Célula com o botão de Remover */}
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                    {/* Botão Editar */}
+                    <button
+                      onClick={() => onEditItem(itemIndex)}
+                      className="text-blue-600 hover:text-blue-800 font-semibold"
+                    >
+                      Editar
+                    </button>
+                    {/* Botão Remover */}
                     <button
                       onClick={() => onRemoveItem(itemIndex)}
                       className="text-red-600 hover:text-red-800 font-semibold"
