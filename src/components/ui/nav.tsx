@@ -22,7 +22,7 @@ export const Nav = (): JSX.Element => {
       ],
     },
     { text: "Alterar matrícula", link: "/alterar-matricula" },
-    { text: "Novo Cadastro de referência", link: "#" },
+    { text: "Novo Cadastro de referência", link: "/novo-cadastro-referencia" },
     { text: "Cadastro Motorista", link: "#" },
     { text: "Cadastro Veículo", link: "#" },
     { text: "Crédito de valores para cartão", link: "#" },
@@ -88,7 +88,7 @@ export const Nav = (): JSX.Element => {
               )}
 
               {/* This is a fallback link for mobile or non-hover devices */}
-              {!item.submenu && (
+              {!item.submenu && item.link !== "#" && (
                 <Link to={item.link} className="absolute inset-0" />
               )}
             </div>

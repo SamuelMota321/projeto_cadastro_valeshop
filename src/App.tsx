@@ -1,9 +1,10 @@
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
+import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
 import { AlterarMatricula } from "./screens/AlterarMatricula";
 import { CadastrarUsuario } from "./screens/CadastrarUsuario";
-import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario";
+import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario"
 import { AlterarDadosBancarios } from "./screens/AlterarDadosBancarios";
-import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
+import { NovoCadastroReferencia } from "./screens/NovoCadastroReferencia";
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/alterar-dados-bancarios",
     element: <AlterarDadosBancarios />,
+  },
+  {
+    path: "/novo-cadastro-referencia",
+    element: <NovoCadastroReferencia />,
   },
 ]);
 
