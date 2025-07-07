@@ -1,1 +1,1 @@
-export { AlterarStatusCarto } from "./AlterarStatusCarto";
+export { AlterarStatusCartao } from "./AlterarStatusCartao";

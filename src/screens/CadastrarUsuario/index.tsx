@@ -1,0 +1,1 @@
+export { CadastrarUsuario } from "./CadastrarUsuario";
