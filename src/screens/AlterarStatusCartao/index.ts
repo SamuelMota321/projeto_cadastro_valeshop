@@ -1,0 +1,1 @@
+export { AlterarStatusCarto } from "./AlterarStatusCarto";
