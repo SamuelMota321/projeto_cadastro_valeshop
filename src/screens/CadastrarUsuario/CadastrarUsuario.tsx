@@ -195,41 +195,34 @@ export const CadastrarUsuario = (): JSX.Element => {
 
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div>
-                      <RequiredLabel>CPF:</RequiredLabel>
+                      <RequiredLabel error={formErrors.cpf}>CPF:</RequiredLabel>
                       <Input value={formData.cpf || ""} onChange={e => handleInputChange('cpf', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="12345678900" />
-                      {/* Este parágrafo exibe o erro específico do campo 'cpf' */}
-                      {formErrors.cpf && <p className="text-red-500 text-xs mt-1">{formErrors.cpf}</p>}
                     </div>
                     <div className="col-span-2">
-                      <RequiredLabel>Nome Completo:</RequiredLabel>
+                      <RequiredLabel error={formErrors.nome}>Nome Completo:</RequiredLabel>
                       <Input value={formData.nome || ""} onChange={e => handleInputChange('nome', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="João da Silva Santos" />
-                      {formErrors.nome && <p className="text-red-500 text-xs mt-1">{formErrors.nome}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
-                      <RequiredLabel>DDD/Telefone:</RequiredLabel>
+                      <RequiredLabel error={formErrors.telefone}>DDD/Telefone:</RequiredLabel>
                       <Input value={formData.telefone || ""} onChange={e => handleInputChange('telefone', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="61990909090" />
-                      {formErrors.telefone && <p className="text-red-500 text-xs mt-1">{formErrors.telefone}</p>}
                     </div>
                     <div className="col-span-2">
-                      <RequiredLabel>E-mail do Beneficiário:</RequiredLabel>
+                      <RequiredLabel error={formErrors.email}>E-mail do Beneficiário:</RequiredLabel>
                       <Input value={formData.email || ""} onChange={e => handleInputChange('email', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="exemplo@email.com" />
-                      {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
-                      <RequiredLabel>Data de Nascimento:</RequiredLabel>
+                      <RequiredLabel error={formErrors.nascimento}>Data de Nascimento:</RequiredLabel>
                       <Input value={formData.nascimento || ""} onChange={e => handleInputChange('nascimento', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="01/08/1990" />
-                      {formErrors.nascimento && <p className="text-red-500 text-xs mt-1">{formErrors.nascimento}</p>}
                     </div>
                     <div className="col-span-2">
-                      <RequiredLabel>Nome da mãe:</RequiredLabel>
+                      <RequiredLabel error={formErrors.nomeMae}>Nome da mãe:</RequiredLabel>
                       <Input value={formData.nomeMae || ""} onChange={e => handleInputChange('nomeMae', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Maria da Silva Santos" />
-                      {formErrors.nomeMae && <p className="text-red-500 text-xs mt-1">{formErrors.nomeMae}</p>}
                     </div>
                   </div>
 
