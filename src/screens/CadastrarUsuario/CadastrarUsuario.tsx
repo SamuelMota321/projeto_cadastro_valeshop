@@ -108,7 +108,12 @@ export const CadastrarUsuario = (): JSX.Element => {
         validRows.push(result.data);
       } else {
         result.error.issues.forEach((issue: ZodIssue) => {
-          newErrorMessages.push(`Linha ${index + 1} - ${issue.path.join('.')}: ${issue.message}`);
+          const fieldName = issue.path[0] as keyof typeof headerMapping;
+          const friendlyFieldName = headerMapping[fieldName] || fieldName;
+          const invalidValue = rowData[fieldName];
+          const displayValue = invalidValue ? `"${invalidValue}"` : '(vazio)';
+          
+          newErrorMessages.push(`Linha ${index + 1}, campo "${friendlyFieldName}": valor ${displayValue} - ${issue.message}`);
         });
       }
     });
