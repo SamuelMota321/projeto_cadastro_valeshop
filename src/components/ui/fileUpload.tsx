@@ -34,7 +34,11 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
 
         let rows: any[][] = [];
         if (file.name.endsWith('.csv')) {
-          const result = Papa.parse<any[]>(binaryStr as string, { header: false, skipEmptyLines: true });
+          const result = Papa.parse<any[]>(binaryStr as string, { 
+            header: false, 
+            skipEmptyLines: false, // Don't skip empty lines to maintain row indexing
+            delimiter: ';' // Use semicolon as delimiter for CSV
+          });
           rows = result.data;
         } else if (file.name.endsWith('.xlsx')) {
           const workbook = XLSX.read(binaryStr, { type: 'binary' });
@@ -43,30 +47,25 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
           rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
         }
 
-        // Find the header row (should be row 4, index 4)
+        // Find the header row - look for the row with CPF, Nome Completo, etc.
         let headerRowIndex = -1;
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
-          if (row && row.length > 0 && expectedHeaders.every(header => 
-            row.map(cell => String(cell).trim()).includes(header)
-          )) {
-            headerRowIndex = i;
-            break;
-          }
-        }
-
-        if (headerRowIndex === -1) {
-          // If exact headers not found, try to find a row that looks like headers
-          for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            if (row && row.some(cell => 
-              String(cell).includes('CPF') || 
-              String(cell).includes('Nome') || 
-              String(cell).includes('E-mail')
-            )) {
+          if (row && row.length > 0) {
+            const rowString = row.map(cell => String(cell).trim()).join(' ');
+            // Look for the specific header row
+            if (rowString.includes('CPF') && 
+                rowString.includes('Nome Completo') && 
+                rowString.includes('E-mail do Beneficiário') &&
+                !rowString.includes('OBRIGATÓRIO') &&
+                !rowString.includes('Exemplo:')) {
               headerRowIndex = i;
               break;
             }
+          }
+        }
+            headerRowIndex = i;
+            break;
           }
         }
 
@@ -78,14 +77,87 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
         const headers = rows[headerRowIndex].map(h => String(h).trim());
         let dataStartIndex = headerRowIndex + 1;
 
-        // Skip rows that contain "OBRIGATÓRIO" or are instruction rows
-        while (dataStartIndex < rows.length && rows[dataStartIndex] && 
-               (rows[dataStartIndex].some(cell => 
-                 String(cell).toUpperCase().includes("OBRIGATÓRIO") ||
-                 String(cell).includes("Exemplo:") ||
-                 String(cell).includes("(") ||
-                 String(cell).length > 50 // Skip long instruction text
-               ) || rows[dataStartIndex].every(cell => !cell || String(cell).trim() === ""))) {
+        // Skip instruction rows after headers
+        while (dataStartIndex < rows.length) {
+          const currentRow = rows[dataStartIndex];
+          if (!currentRow) {
+            dataStartIndex++;
+            continue;
+          }
+          
+          const rowText = currentRow.map(cell => String(cell || '').trim()).join(' ');
+          
+          // Skip if row contains instruction keywords
+          if (rowText.includes('OBRIGATÓRIO') ||
+              rowText.includes('Exemplo:') ||
+              rowText.includes('CPF do benefíciário') ||
+              rowText.includes('Nome completo do funcionário') ||
+              rowText.includes('Informe o DDD') ||
+              rowText.includes('Data de nascimento do beneficiário') ||
+              rowText.includes('(11 dígitos)') ||
+              rowText.includes('(sem caracteres)') ||
+              rowText.includes('(Formato DD/MM/AAAA)') ||
+              currentRow.every(cell => !cell || String(cell).trim() === '')) {
+            dataStartIndex++;
+          } else {
+            break;
+          }
+        }
+
+        const dataRows = rows.slice(dataStartIndex);
+
+        // Filter out empty rows and instruction rows from data
+        const cleanDataRows = dataRows.filter(row => {
+          if (!row || row.length === 0) return false;
+          
+          const rowText = row.map(cell => String(cell || '').trim()).join(' ');
+          
+          // Skip if it's still an instruction row
+          if (rowText.includes('Exemplo:') ||
+              rowText.includes('OBRIGATÓRIO') ||
+              rowText.includes('CPF do benefíciário') ||
+              rowText.includes('Nome completo do funcionário')) {
+            return false;
+          }
+          
+          // Keep if it has actual data (at least one non-empty cell)
+          return row.some(cell => cell && String(cell).trim() !== '');
+        });
+
+        const processedData = cleanDataRows.map(row => {
+          const rowData: Record<string, any> = {};
+          headers.forEach((header, index) => {
+            if (header && row[index] !== undefined) {
+              rowData[String(header)] = String(row[index] || '').trim();
+            }
+          });
+          return rowData;
+        }).filter(row => {
+          // Final filter: ensure the row has meaningful data
+          return Object.values(row).some(val => val && String(val).trim() !== '' && !String(val).includes('Exemplo:'));
+        });
+
+        if (processedData.length === 0) {
+          onError('Nenhum dado válido foi encontrado no arquivo. Verifique se há dados após as linhas de instrução.');
+          return;
+        }
+
+        onDataLoaded(processedData);
+
+      } catch (error) {
+        console.error("File Processing Error:", error);
+        onError("Ocorreu um erro inesperado ao processar o arquivo.");
+      }
+    };
+
+    reader.onerror = () => { onError("Falha ao ler o arquivo."); };
+    
+    if (file.name.endsWith('.csv')) {
+      reader.readAsText(file, 'UTF-8'); // Read CSV as text with UTF-8 encoding
+    } else {
+      reader.readAsBinaryString(file); // Read Excel as binary
+    }
+  }, [expectedHeaders, onDataLoaded, onError]);
           dataStartIndex++;
         }
 
