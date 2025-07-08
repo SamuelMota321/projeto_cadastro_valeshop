@@ -1,1 +1,1 @@
-export { NovoCadastroReferencia } from "./NovoCadastroReferencia";
+// export { NovoCadastroReferencia } from "./NovoCadastroReferencia";
