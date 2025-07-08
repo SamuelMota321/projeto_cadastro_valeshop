@@ -72,21 +72,22 @@ export const CadastrarUsuario = (): JSX.Element => {
       newCompanyErrors.cnpj = "CNPJ é obrigatório.";
     }
     
-    if (Object.keys(newCompanyErrors).length > 0) {
-      setCompanyErrors(newCompanyErrors);
-      return; // Interrompe se há erros nos campos da empresa
-    }
-
+    // Validar campos do usuário
     const result = userSchema.safeParse(formData);
-
+    const newUserErrors: Record<string, string | undefined> = {};
+    
     if (!result.success) {
-      const newErrors: Record<string, string | undefined> = {};
       result.error.issues.forEach(issue => {
         const path = issue.path[0] as keyof UserSchemaType;
-        newErrors[path] = issue.message;
+        newUserErrors[path] = issue.message;
       });
-      setFormErrors(newErrors);
-      return; // Interrompe a função para o usuário corrigir os erros
+    }
+
+    // Se há erros em qualquer campo, exibe todos e interrompe
+    if (Object.keys(newCompanyErrors).length > 0 || Object.keys(newUserErrors).length > 0) {
+      setCompanyErrors(newCompanyErrors);
+      setFormErrors(newUserErrors);
+      return;
     }
 
     const newEntry = result.data;
