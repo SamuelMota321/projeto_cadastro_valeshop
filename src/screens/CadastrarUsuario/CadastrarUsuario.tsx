@@ -83,7 +83,6 @@ export const CadastrarUsuario = (): JSX.Element => {
     setTableData(prevData => prevData.filter((_, index) => index !== indexToRemove));
   };
 
-  // Processa e valida os dados de um arquivo carregado
   const handleDataLoadedFromFile = (data: any[]) => {
     setSuccessMessages([]);
     setErrorMessages([]);
@@ -103,7 +102,7 @@ export const CadastrarUsuario = (): JSX.Element => {
       };
 
       const result = userSchema.safeParse(rowData);
-      
+
       if (result.success) {
         validRows.push(result.data);
       } else {
@@ -112,8 +111,8 @@ export const CadastrarUsuario = (): JSX.Element => {
           const friendlyFieldName = headerMapping[fieldName] || fieldName;
           const invalidValue = row[headerMapping[fieldName]];
           const displayValue = invalidValue ? `"${invalidValue}"` : '(vazio)';
-          
-          newErrorMessages.push(`Linha ${index + 1}, campo "${friendlyFieldName}": valor ${displayValue} - ${issue.message}`);
+
+          newErrorMessages.push(`Linha ${index + 4}, campo "${friendlyFieldName}": valor ${displayValue} - ${issue.message}`);
         });
       }
     });
@@ -125,8 +124,9 @@ export const CadastrarUsuario = (): JSX.Element => {
     if (validRows.length > 0) {
       setTableData(prevData => [...prevData, ...validRows]);
       setSuccessMessages([`Total de ${validRows.length} registros válidos foram importados.`]);
-    } else {
-      setErrorMessages(['Nenhum dado válido foi encontrado no arquivo.']);
+    }
+    else if (newErrorMessages.length === 0) {
+      setErrorMessages(['O arquivo parece estar vazio ou não contém dados para importar.']);
     }
   };
 
