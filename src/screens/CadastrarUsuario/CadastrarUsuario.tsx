@@ -17,6 +17,7 @@ export const CadastrarUsuario = (): JSX.Element => {
   // Estados para os dados da empresa
   const [razaoSocial, setRazaoSocial] = useState("");
   const [cnpj, setCnpj] = useState("");
+  const [companyErrors, setCompanyErrors] = useState<{ razaoSocial?: string; cnpj?: string }>({});
 
   // Estado unificado para os dados do formulário do usuário
   const [formData, setFormData] = useState<Partial<UserSchemaType>>({});
@@ -39,6 +40,19 @@ export const CadastrarUsuario = (): JSX.Element => {
     }
   };
 
+  // Atualiza os campos da empresa e limpa os erros
+  const handleCompanyInputChange = (field: 'razaoSocial' | 'cnpj', value: string) => {
+    if (field === 'razaoSocial') {
+      setRazaoSocial(value);
+    } else {
+      setCnpj(value);
+    }
+    
+    // Limpa o erro do campo quando o usuário digita
+    if (companyErrors[field]) {
+      setCompanyErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  };
   // Limpa o formulário e sai do modo de edição
   const resetFormAndExitEditing = () => {
     setFormData({});
@@ -47,6 +61,22 @@ export const CadastrarUsuario = (): JSX.Element => {
   };
 
   const handleRegisterOrUpdateClick = () => {
+    // Validar campos da empresa primeiro
+    const newCompanyErrors: { razaoSocial?: string; cnpj?: string } = {};
+    
+    if (!razaoSocial.trim()) {
+      newCompanyErrors.razaoSocial = "Razão Social é obrigatória.";
+    }
+    
+    if (!cnpj.trim()) {
+      newCompanyErrors.cnpj = "CNPJ é obrigatório.";
+    }
+    
+    if (Object.keys(newCompanyErrors).length > 0) {
+      setCompanyErrors(newCompanyErrors);
+      return; // Interrompe se há erros nos campos da empresa
+    }
+
     const result = userSchema.safeParse(formData);
 
     if (!result.success) {
@@ -190,12 +220,22 @@ export const CadastrarUsuario = (): JSX.Element => {
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <RequiredLabel>Razão Social:</RequiredLabel>
-                      <Input value={razaoSocial} onChange={e => setRazaoSocial(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Nome da empresa" />
+                      <RequiredLabel error={companyErrors.razaoSocial}>Razão Social:</RequiredLabel>
+                      <Input 
+                        value={razaoSocial} 
+                        onChange={e => handleCompanyInputChange('razaoSocial', e.target.value)} 
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" 
+                        placeholder="Nome da empresa" 
+                      />
                     </div>
                     <div>
-                      <RequiredLabel>N° do CNPJ:</RequiredLabel>
-                      <Input value={cnpj} onChange={e => setCnpj(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Digite o CNPJ" />
+                      <RequiredLabel error={companyErrors.cnpj}>N° do CNPJ:</RequiredLabel>
+                      <Input 
+                        value={cnpj} 
+                        onChange={e => handleCompanyInputChange('cnpj', e.target.value)} 
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" 
+                        placeholder="Digite o CNPJ" 
+                      />
                     </div>
                   </div>
 
