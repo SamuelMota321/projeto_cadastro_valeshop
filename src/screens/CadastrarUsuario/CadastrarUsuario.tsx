@@ -6,88 +6,59 @@ import { Nav } from "../../components/ui/nav";
 import { Header } from "../../components/ui/header";
 import { TemporaryDataTable } from "../../components/ui/temporaryDataTable";
 import { FileUpload } from "../../components/ui/fileUpload";
-import { downloadAsCSV, downloadSampleCSV } from "../../lib/utils";
 import { AlertBox } from "../../components/ui/alertBox";
 import { RequiredLabel } from "../../components/ui/requiredLabel";
 import { SpreadsheetInstructions } from "../../components/ui/SpreadsheetInstructions";
-
-// Define a estrutura dos dados para a tabela e o formulário
-type TableData = {
-  cpf: string;
-  nome: string;
-  telefone: string;
-  email: string;
-  nascimento: string;
-  nomeMae: string;
-};
+import { downloadAsCSV, downloadSampleCSV } from "../../lib/utils";
+import { userSchema, UserSchemaType } from "../../lib/schemas/userSchema";
+import { ZodIssue } from "zod";
 
 export const CadastrarUsuario = (): JSX.Element => {
-  // Estados para os campos de dados da empresa
+  // Estados para os dados da empresa
   const [razaoSocial, setRazaoSocial] = useState("");
   const [cnpj, setCnpj] = useState("");
 
-  // Novos estados para controlar as mensagens de alerta
-  const [successMessages, setSuccessMessages] = useState<string[]>([]);
-  const [errorMessages, setErrorMessages] = useState<string[]>([])
+  // Estado unificado para os dados do formulário do usuário
+  const [formData, setFormData] = useState<Partial<UserSchemaType>>({});
 
-  // Estados para os campos de dados do usuário
-  const [cpf, setCpf] = useState("");
-  const [nome, setNome] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [email, setEmail] = useState("");
-  const [nascimento, setNascimento] = useState("");
-  const [nomeMae, setNomeMae] = useState("");
+  // Estado para armazenar os erros de validação do formulário manual
+  const [formErrors, setFormErrors] = useState<Record<string, string | undefined>>({});
 
-  // Estados para a tabela e controle de edição
-  const [tableData, setTableData] = useState<TableData[]>([]);
+  // Estados para a tabela, edição e alertas de feedback
+  const [tableData, setTableData] = useState<UserSchemaType[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [successMessages, setSuccessMessages] = useState<string[]>([]);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
-
-  const cadastroUsuarioInstructions = [
-    {
-      field: "CPF",
-      rule: "Deve conter 11 dígitos, sem pontos ou traços.",
-      example: "Exemplo: 12345678900",
-    },
-    {
-      field: "Nome Completo",
-      rule: "Escreva o nome completo do funcionário, sem abreviações ou caracteres especiais.",
-      example: "Exemplo: Joao da Silva Santos",
-    },
-    {
-      field: "DDD/Telefone",
-      rule: "Informe o DDD junto com o número de celular, sem espaços ou parênteses.",
-      example: "Exemplo: 61990909090",
-    },
-    {
-      field: "E-mail do Beneficiário",
-      rule: "Utilize um formato de e-mail válido.",
-      example: "Exemplo: exemplo@email.com",
-    },
-    {
-      field: "Data de Nascimento",
-      rule: "Siga o formato DD/MM/AAAA.",
-      example: "Exemplo: 01/08/1990",
-    },
-    {
-      field: "Nome da Mãe",
-      rule: "Escreva o nome completo da mãe do funcionário, sem abreviações.",
-      example: "Exemplo: Maria da Silva Santos",
-    },
-  ];
-  // Limpa os campos do formulário do usuário e sai do modo de edição
-  const resetFormAndExitEditing = () => {
-    setCpf(""); setNome(""); setTelefone(""); setEmail(""); setNascimento(""); setNomeMae("");
-    setEditingIndex(null);
+  // Atualiza o estado do formulário e limpa o erro do campo correspondente
+  const handleInputChange = (field: keyof UserSchemaType, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: undefined }));
+    }
   };
 
-  // Adiciona um novo registro ou atualiza um existente
+  // Limpa o formulário e sai do modo de edição
+  const resetFormAndExitEditing = () => {
+    setFormData({});
+    setEditingIndex(null);
+    setFormErrors({});
+  };
+
+  // Valida e adiciona/atualiza um registro do formulário manual
   const handleRegisterOrUpdateClick = () => {
-    if (!cpf || !nome || !telefone || !email || !nascimento || !nomeMae) {
-      alert("Por favor, preencha todos os campos do usuário.");
+    const result = userSchema.safeParse(formData);
+
+    if (!result.success) {
+      const errors: Record<string, string | undefined> = {};
+      result.error.issues.forEach(issue => {
+        errors[issue.path[0]] = issue.message;
+      });
+      setFormErrors(errors);
       return;
     }
-    const newEntry: TableData = { cpf, nome, telefone, email, nascimento, nomeMae };
+
+    const newEntry = result.data;
 
     if (editingIndex !== null) {
       const updatedData = [...tableData];
@@ -99,16 +70,11 @@ export const CadastrarUsuario = (): JSX.Element => {
     resetFormAndExitEditing();
   };
 
-  // Prepara o formulário para editar um item da tabela
+  // Carrega um item da tabela no formulário para edição
   const handleEditItem = (indexToEdit: number) => {
-    const item = tableData[indexToEdit];
-    setCpf(item.cpf);
-    setNome(item.nome);
-    setTelefone(item.telefone);
-    setEmail(item.email);
-    setNascimento(item.nascimento);
-    setNomeMae(item.nomeMae);
+    setFormData(tableData[indexToEdit]);
     setEditingIndex(indexToEdit);
+    setFormErrors({});
   };
 
   // Remove um item da tabela
@@ -116,80 +82,52 @@ export const CadastrarUsuario = (): JSX.Element => {
     setTableData(prevData => prevData.filter((_, index) => index !== indexToRemove));
   };
 
-  // Processa os dados recebidos do componente de upload
+  // Processa e valida os dados de um arquivo carregado
   const handleDataLoadedFromFile = (data: any[]) => {
     setSuccessMessages([]);
     setErrorMessages([]);
-    const validRows: TableData[] = [];
-    const newSuccessMessages: string[] = [];
-    const newErrorMessages: string[] = [];
 
-    // Mapeamento dos campos obrigatórios e seus nomes amigáveis
-    const requiredFields = {
-      "CPF": "CPF",
-      "Nome Completo": "Nome Completo",
-      "DDD/Telefone": "DDD/Telefone",
-      "E-mail do Beneficiário": "E-mail do Beneficiário",
-      "Data de Nascimento": "Data de Nascimento",
-      "Nome da Mãe": "Nome da Mãe"
+    const newErrorMessages: string[] = [];
+    const validRows: UserSchemaType[] = [];
+
+    const headerMapping = {
+      cpf: "CPF", nome: "Nome Completo", telefone: "DDD/Telefone",
+      email: "E-mail do Beneficiário", nascimento: "Data de Nascimento", nomeMae: "Nome da Mãe"
     };
 
     data.forEach((row, index) => {
-      const missingFields = [];
-      for (const field in requiredFields) {
-        if (!row[field] || String(row[field]).trim() === "") {
-          missingFields.push(requiredFields[field as keyof typeof requiredFields]);
-        }
-      }
+      const rowData = {
+        cpf: row[headerMapping.cpf], nome: row[headerMapping.nome], telefone: row[headerMapping.telefone],
+        email: row[headerMapping.email], nascimento: row[headerMapping.nascimento], nomeMae: row[headerMapping.nomeMae]
+      };
 
-      if (missingFields.length > 0) {
-        newErrorMessages.push(`Linha ${index + 2}: Campo(s) obrigatório(s) faltando - ${missingFields.join(', ')}.`);
+      const result = userSchema.safeParse(rowData);
+
+      if (result.success) {
+        validRows.push(result.data);
       } else {
-        const newRow = {
-          cpf: row["CPF"],
-          nome: row["Nome Completo"],
-          telefone: row["DDD/Telefone"],
-          email: row["E-mail do Beneficiário"],
-          nascimento: row["Data de Nascimento"],
-          nomeMae: row["Nome da Mãe"],
-        };
-        validRows.push(newRow);
-        newSuccessMessages.push(`Registro da linha ${index + 2} (CPF: ${newRow.cpf}) adicionado à lista.`);
+        result.error.issues.forEach((issue: ZodIssue) => {
+          const fieldName = Object.keys(headerMapping).find(key => key === issue.path[0]);
+          const friendlyFieldName = fieldName ? headerMapping[fieldName as keyof typeof headerMapping] : issue.path[0];
+          newErrorMessages.push(`Linha ${index + 2}: Coluna '${friendlyFieldName}' - ${issue.message}`);
+        });
       }
     });
 
     if (validRows.length > 0) {
       setTableData(prevData => [...prevData, ...validRows]);
+      setSuccessMessages([`Total de ${validRows.length} registros válidos foram importados.`]);
     }
-    // Atualiza os estados de alerta para renderizar as caixas
-    setSuccessMessages(newSuccessMessages);
-    setErrorMessages(newErrorMessages);
+    if (newErrorMessages.length > 0) {
+      setErrorMessages(newErrorMessages);
+    }
   };
 
-  const handleDownload = () => {
-    if (!razaoSocial || !cnpj) {
-      alert("Por favor, preencha a Razão Social e o CNPJ da empresa antes de baixar.");
-      return;
-    }
-
-    const dataToDownload = tableData.map(item => ({
-      "CNPJ": cnpj,
-      "Razão Social": razaoSocial,
-      "CPF": item.cpf,
-      "Nome Completo": item.nome,
-      "DDD/Telefone": item.telefone,
-      "E-mail do Beneficiário": item.email,
-      "Data de Nascimento": item.nascimento,
-      "Nome da Mãe": item.nomeMae,
-    }));
-    downloadAsCSV(dataToDownload, 'cadastro_usuarios');
-  };
-
+  // Gera e baixa a planilha de exemplo
   const handleDownloadSample = () => {
-    // Define a estrutura e o conteúdo da planilha de exemplo
     const sampleData: string[][] = [
-      ["CNPJ:", ""],
-      ["RAZÃO SOCIAL:", ""],
+      ["CNPJ:", cnpj],
+      ["RAZÃO SOCIAL:", razaoSocial],
       ["CPF", "Nome Completo", "DDD/Telefone", "E-mail do Beneficiário", "Data de Nascimento", "Nome da Mãe"],
       ["OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO"],
       [
@@ -204,7 +142,30 @@ export const CadastrarUsuario = (): JSX.Element => {
     downloadSampleCSV(sampleData, "exemplo_cadastro_usuario");
   };
 
+  // Gera e baixa os dados da tabela
+  const handleDownload = () => {
+    if (!razaoSocial || !cnpj) {
+      alert("Por favor, preencha a Razão Social e o CNPJ da empresa antes de baixar.");
+      return;
+    }
+    const dataToDownload = tableData.map(item => ({
+      "CNPJ": cnpj, "Razão Social": razaoSocial, "CPF": item.cpf,
+      "Nome Completo": item.nome, "DDD/Telefone": item.telefone,
+      "E-mail do Beneficiário": item.email, "Data de Nascimento": item.nascimento, "Nome da Mãe": item.nomeMae,
+    }));
+    downloadAsCSV(dataToDownload, 'cadastro_usuarios_preenchido');
+  };
+
   const expectedHeadersForUpload = ["CPF", "Nome Completo", "DDD/Telefone", "E-mail do Beneficiário", "Data de Nascimento", "Nome da Mãe"];
+
+  const cadastroUsuarioInstructions = [
+    { field: "CPF", rule: "Deve conter 11 dígitos, sem pontos ou traços.", example: "Exemplo: 12345678900" },
+    { field: "Nome Completo", rule: "Escreva o nome completo, sem abreviações ou caracteres especiais.", example: "Exemplo: Joao da Silva Santos" },
+    { field: "DDD/Telefone", rule: "Informe o DDD junto com o número de celular, sem espaços ou parênteses.", example: "Exemplo: 61990909090" },
+    { field: "E-mail do Beneficiário", rule: "Utilize um formato de e-mail válido.", example: "Exemplo: exemplo@email.com" },
+    { field: "Data de Nascimento", rule: "Siga o formato DD/MM/AAAA.", example: "Exemplo: 01/08/1990" },
+    { field: "Nome da Mãe", rule: "Escreva o nome completo da mãe, sem abreviações.", example: "Exemplo: Maria da Silva Santos" }
+  ];
 
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
@@ -216,10 +177,8 @@ export const CadastrarUsuario = (): JSX.Element => {
               <div className="flex">
                 <Nav />
                 <div className="flex-1 px-8 py-6 min-w-0">
-                  <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
-                    Cadastrar Usuário
-                  </h1>
-                  {/* Formulário com os asteriscos */}
+                  <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">Cadastrar Usuário</h1>
+
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <RequiredLabel>Razão Social:</RequiredLabel>
@@ -234,33 +193,39 @@ export const CadastrarUsuario = (): JSX.Element => {
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div>
                       <RequiredLabel>CPF:</RequiredLabel>
-                      <Input value={cpf} onChange={e => setCpf(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="12345678900" />
+                      <Input value={formData.cpf || ""} onChange={e => handleInputChange('cpf', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="12345678900" />
+                      {formErrors.cpf && <p className="text-red-500 text-xs mt-1">{formErrors.cpf}</p>}
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>Nome Completo:</RequiredLabel>
-                      <Input value={nome} onChange={e => setNome(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="João da Silva Santos" />
+                      <Input value={formData.nome || ""} onChange={e => handleInputChange('nome', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="João da Silva Santos" />
+                      {formErrors.nome && <p className="text-red-500 text-xs mt-1">{formErrors.nome}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
                       <RequiredLabel>DDD/Telefone:</RequiredLabel>
-                      <Input value={telefone} onChange={e => setTelefone(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="61990909090" />
+                      <Input value={formData.telefone || ""} onChange={e => handleInputChange('telefone', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="61990909090" />
+                      {formErrors.telefone && <p className="text-red-500 text-xs mt-1">{formErrors.telefone}</p>}
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>E-mail do Beneficiário:</RequiredLabel>
-                      <Input value={email} onChange={e => setEmail(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="exemplo@email.com" />
+                      <Input value={formData.email || ""} onChange={e => handleInputChange('email', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="exemplo@email.com" />
+                      {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
                       <RequiredLabel>Data de Nascimento:</RequiredLabel>
-                      <Input value={nascimento} onChange={e => setNascimento(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="01/08/1990" />
+                      <Input value={formData.nascimento || ""} onChange={e => handleInputChange('nascimento', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="01/08/1990" />
+                      {formErrors.nascimento && <p className="text-red-500 text-xs mt-1">{formErrors.nascimento}</p>}
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>Nome da mãe:</RequiredLabel>
-                      <Input value={nomeMae} onChange={e => setNomeMae(e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Maria da Silva Santos" />
+                      <Input value={formData.nomeMae || ""} onChange={e => handleInputChange('nomeMae', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Maria da Silva Santos" />
+                      {formErrors.nomeMae && <p className="text-red-500 text-xs mt-1">{formErrors.nomeMae}</p>}
                     </div>
                   </div>
 
@@ -273,33 +238,22 @@ export const CadastrarUsuario = (): JSX.Element => {
                     </Button>
                   </div>
 
+                  
+                  <AlertBox variant="error" title="Erros na Importação" messages={errorMessages} onClose={() => setErrorMessages([])} />
+                  <AlertBox variant="success" title="Importação Concluída" messages={successMessages} onClose={() => setSuccessMessages([])} />
+
                   <div className="mb-6">
                     <FileUpload
                       expectedHeaders={expectedHeadersForUpload}
                       onDataLoaded={handleDataLoadedFromFile}
-                      onError={(errorMessage) => alert(errorMessage)}
+                      onError={(errorMessage) => setErrorMessages([errorMessage])}
                     />
                   </div>
 
-                  {/* Renderização condicional dos alertas */}
-                  <AlertBox
-                    variant="error"
-                    title="Erros na Importação"
-                    messages={errorMessages}
-                    onClose={() => setErrorMessages([])}
-                  />
-                  <AlertBox
-                    variant="success"
-                    title="Registros Adicionados com Sucesso"
-                    messages={successMessages}
-                    onClose={() => setSuccessMessages([])}
-                  />
                   <SpreadsheetInstructions
                     instructions={cadastroUsuarioInstructions}
                     onDownloadSample={handleDownloadSample}
                   />
-
-
 
                   <TemporaryDataTable
                     headers={["CPF", "Nome", "Telefone", "E-mail", "Nascimento", "Nome da Mãe"]}
