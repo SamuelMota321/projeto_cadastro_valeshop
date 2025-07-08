@@ -62,8 +62,6 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
               headerRowIndex = i;
               break;
             }
-              headerRowIndex = i;
-              break;
           }
         }
 
@@ -97,6 +95,9 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
               rowText.includes('(Formato DD/MM/AAAA)') ||
               currentRow.every(cell => !cell || String(cell).trim() === '')) {
             dataStartIndex++;
+          } else {
+            break;
+          }
         }
 
         const dataRows = rows.slice(dataStartIndex);
