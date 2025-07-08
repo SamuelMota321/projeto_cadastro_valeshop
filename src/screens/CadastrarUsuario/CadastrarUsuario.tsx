@@ -103,8 +103,19 @@ export const CadastrarUsuario = (): JSX.Element => {
       };
 
       const result = userSchema.safeParse(rowData);
+      
+      if (result.success) {
+        validRows.push(result.data);
+      } else {
+        result.error.issues.forEach((issue: ZodIssue) => {
+          newErrorMessages.push(`Linha ${index + 1} - ${issue.path.join('.')}: ${issue.message}`);
+        });
       }
     });
+
+    if (newErrorMessages.length > 0) {
+      setErrorMessages(newErrorMessages);
+    }
 
     if (validRows.length > 0) {
       setTableData(prevData => [...prevData, ...validRows]);
