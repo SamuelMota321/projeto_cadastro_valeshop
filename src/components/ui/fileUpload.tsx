@@ -64,7 +64,6 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
             }
               headerRowIndex = i;
               break;
-            }
           }
         }
 
