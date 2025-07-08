@@ -64,10 +64,6 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
             }
           }
         }
-            headerRowIndex = i;
-            break;
-          }
-        }
 
         if (headerRowIndex === -1) {
           onError('Não foi possível encontrar o cabeçalho na planilha.');
@@ -157,32 +153,6 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
     } else {
       reader.readAsBinaryString(file); // Read Excel as binary
     }
-  }, [expectedHeaders, onDataLoaded, onError]);
-          dataStartIndex++;
-        }
-
-        const dataRows = rows.slice(dataStartIndex);
-
-        const processedData = dataRows.map(row => {
-          const rowData: Record<string, any> = {};
-          headers.forEach((header, index) => {
-            if (header) {
-              rowData[String(header)] = row[index];
-            }
-          });
-          return rowData;
-        }).filter(row => Object.values(row).some(val => val));
-
-        onDataLoaded(processedData);
-
-      } catch (error) {
-        console.error("File Processing Error:", error);
-        onError("Ocorreu um erro inesperado ao processar o arquivo.");
-      }
-    };
-
-    reader.onerror = () => { onError("Falha ao ler o arquivo."); };
-    reader.readAsBinaryString(file);
   }, [expectedHeaders, onDataLoaded, onError]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
