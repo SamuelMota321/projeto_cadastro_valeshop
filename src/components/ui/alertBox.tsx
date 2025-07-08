@@ -45,9 +45,9 @@ export const AlertBox = ({ variant, title, messages, onClose }: AlertBoxProps) =
             <ul role="list" className="list-disc space-y-1 pl-5">
               {variant === 'error' ? messages.map((message, index) => (
                 <li key={index}>{message}</li>
-              )) : (
-                <li>{messages.length} registros adicionados com sucesso.</li>
-              )}
+              )) : messages.map((message, index) => (
+                <li key={index}>{message}</li>
+              ))}
             </ul>
           </div>
         </div>

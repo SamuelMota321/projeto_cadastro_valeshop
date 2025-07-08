@@ -112,7 +112,13 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
           if (rowText.includes('Exemplo:') ||
               rowText.includes('OBRIGATÓRIO') ||
               rowText.includes('CPF do benefíciário') ||
-              rowText.includes('Nome completo do funcionário')) {
+              rowText.includes('Nome completo do funcionário') ||
+              rowText.includes('Informe o DDD') ||
+              rowText.includes('Data de nascimento') ||
+              rowText.includes('Nome completo da mãe') ||
+              rowText.includes('(11 dígitos)') ||
+              rowText.includes('(sem caracteres)') ||
+              rowText.includes('(Formato DD/MM/AAAA)')) {
             return false;
           }
           
@@ -130,7 +136,21 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
           return rowData;
         }).filter(row => {
           // Final filter: ensure the row has meaningful data
-          return Object.values(row).some(val => val && String(val).trim() !== '' && !String(val).includes('Exemplo:'));
+          const values = Object.values(row);
+          const hasData = values.some(val => val && String(val).trim() !== '');
+          const isNotInstruction = !values.some(val => 
+            String(val).includes('Exemplo:') || 
+            String(val).includes('OBRIGATÓRIO') ||
+            String(val).includes('CPF do benefíciário') ||
+            String(val).includes('Nome completo do funcionário') ||
+            String(val).includes('Informe o DDD') ||
+            String(val).includes('Data de nascimento') ||
+            String(val).includes('Nome completo da mãe') ||
+            String(val).includes('(11 dígitos)') ||
+            String(val).includes('(sem caracteres)') ||
+            String(val).includes('(Formato DD/MM/AAAA)')
+          );
+          return hasData && isNotInstruction;
         });
 
         if (processedData.length === 0) {
