@@ -33,6 +33,7 @@ export const CadastrarUsuario = (): JSX.Element => {
   // Atualiza o estado do formulário e limpa o erro do campo correspondente
   const handleInputChange = (field: keyof UserSchemaType, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Garante que o erro do campo seja limpo quando o usuário digita
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: undefined }));
     }
@@ -45,17 +46,17 @@ export const CadastrarUsuario = (): JSX.Element => {
     setFormErrors({});
   };
 
-  // Valida e adiciona/atualiza um registro do formulário manual
   const handleRegisterOrUpdateClick = () => {
     const result = userSchema.safeParse(formData);
 
     if (!result.success) {
-      const errors: Record<string, string | undefined> = {};
+      const newErrors: Record<string, string | undefined> = {};
       result.error.issues.forEach(issue => {
-        errors[issue.path[0]] = issue.message;
+        const path = issue.path[0] as keyof UserSchemaType;
+        newErrors[path] = issue.message;
       });
-      setFormErrors(errors);
-      return;
+      setFormErrors(newErrors);
+      return; // Interrompe a função para o usuário corrigir os erros
     }
 
     const newEntry = result.data;
@@ -126,8 +127,10 @@ export const CadastrarUsuario = (): JSX.Element => {
   // Gera e baixa a planilha de exemplo
   const handleDownloadSample = () => {
     const sampleData: string[][] = [
+      ["", "PLANILHA PARA CADASTRO DOS DADOS"],
       ["CNPJ:", cnpj],
       ["RAZÃO SOCIAL:", razaoSocial],
+      [],
       ["CPF", "Nome Completo", "DDD/Telefone", "E-mail do Beneficiário", "Data de Nascimento", "Nome da Mãe"],
       ["OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO"],
       [
@@ -194,6 +197,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     <div>
                       <RequiredLabel>CPF:</RequiredLabel>
                       <Input value={formData.cpf || ""} onChange={e => handleInputChange('cpf', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="12345678900" />
+                      {/* Este parágrafo exibe o erro específico do campo 'cpf' */}
                       {formErrors.cpf && <p className="text-red-500 text-xs mt-1">{formErrors.cpf}</p>}
                     </div>
                     <div className="col-span-2">
@@ -238,7 +242,6 @@ export const CadastrarUsuario = (): JSX.Element => {
                     </Button>
                   </div>
 
-                  
                   <AlertBox variant="error" title="Erros na Importação" messages={errorMessages} onClose={() => setErrorMessages([])} />
                   <AlertBox variant="success" title="Importação Concluída" messages={successMessages} onClose={() => setSuccessMessages([])} />
 
@@ -254,6 +257,8 @@ export const CadastrarUsuario = (): JSX.Element => {
                     instructions={cadastroUsuarioInstructions}
                     onDownloadSample={handleDownloadSample}
                   />
+
+
 
                   <TemporaryDataTable
                     headers={["CPF", "Nome", "Telefone", "E-mail", "Nascimento", "Nome da Mãe"]}

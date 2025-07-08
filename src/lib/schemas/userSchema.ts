@@ -5,7 +5,7 @@ const nameRegex = /^[a-zA-Z\u00C0-\u017F'\s]+$/;
 const phoneRegex = /^[0-9]+$/;
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
 
-// Este é o nosso esquema Zod. Ele define a "forma" dos dados e todas as regras de validação.
+// Esquema Zod com as mensagens de erro corretas em português
 export const userSchema = z.object({
   cpf: z.string()
     .min(1, { message: "CPF é obrigatório." })
@@ -32,5 +32,4 @@ export const userSchema = z.object({
     .regex(nameRegex, { message: "Nome da mãe deve conter apenas letras e espaços." }),
 });
 
-// Extraímos o tipo TypeScript do nosso esquema para usá-lo no nosso código.
 export type UserSchemaType = z.infer<typeof userSchema>;
