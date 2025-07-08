@@ -88,6 +88,7 @@ export const CadastrarUsuario = (): JSX.Element => {
     setSuccessMessages([]);
     setErrorMessages([]);
 
+    const newErrorMessages: string[] = [];
     const validRows: UserSchemaType[] = [];
 
     const headerMapping = {
@@ -95,15 +96,13 @@ export const CadastrarUsuario = (): JSX.Element => {
       email: "E-mail do Beneficiário", nascimento: "Data de Nascimento", nomeMae: "Nome da Mãe"
     };
 
-    data.forEach((row) => {
+    data.forEach((row, index) => {
       const rowData = {
         cpf: row[headerMapping.cpf], nome: row[headerMapping.nome], telefone: row[headerMapping.telefone],
         email: row[headerMapping.email], nascimento: row[headerMapping.nascimento], nomeMae: row[headerMapping.nomeMae]
       };
 
-      // Only add rows that have at least some data
-      if (Object.values(rowData).some(value => value && String(value).trim() !== "")) {
-        validRows.push(rowData as UserSchemaType);
+      const result = userSchema.safeParse(rowData);
       }
     });
 
