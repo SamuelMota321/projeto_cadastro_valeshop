@@ -43,20 +43,50 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
           rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
         }
 
-        const headerRowIndex = rows.findIndex(row =>
-          expectedHeaders.every(header => (row.map(cell => String(cell).trim())).includes(header))
-        );
+        // Find the header row (should be row 4, index 4)
+        let headerRowIndex = -1;
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          if (row && row.length > 0 && expectedHeaders.every(header => 
+            row.map(cell => String(cell).trim()).includes(header)
+          )) {
+            headerRowIndex = i;
+            break;
+          }
+        }
 
         if (headerRowIndex === -1) {
-          onError(`Cabeçalho não encontrado. Verifique se a planilha contém a linha com: ${expectedHeaders.join(', ')}`);
+          // If exact headers not found, try to find a row that looks like headers
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            if (row && row.some(cell => 
+              String(cell).includes('CPF') || 
+              String(cell).includes('Nome') || 
+              String(cell).includes('E-mail')
+            )) {
+              headerRowIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (headerRowIndex === -1) {
+          onError('Não foi possível encontrar o cabeçalho na planilha.');
           return;
         }
 
         const headers = rows[headerRowIndex].map(h => String(h).trim());
         let dataStartIndex = headerRowIndex + 1;
 
-        if (rows[dataStartIndex] && rows[dataStartIndex].some(cell => String(cell).toUpperCase().includes("OBRIGATÓRIO"))) {
-          dataStartIndex++; // Pula a linha de obrigatoriedade se existir
+        // Skip rows that contain "OBRIGATÓRIO" or are instruction rows
+        while (dataStartIndex < rows.length && rows[dataStartIndex] && 
+               (rows[dataStartIndex].some(cell => 
+                 String(cell).toUpperCase().includes("OBRIGATÓRIO") ||
+                 String(cell).includes("Exemplo:") ||
+                 String(cell).includes("(") ||
+                 String(cell).length > 50 // Skip long instruction text
+               ) || rows[dataStartIndex].every(cell => !cell || String(cell).trim() === ""))) {
+          dataStartIndex++;
         }
 
         const dataRows = rows.slice(dataStartIndex);

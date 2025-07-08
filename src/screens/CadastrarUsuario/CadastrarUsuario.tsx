@@ -88,7 +88,6 @@ export const CadastrarUsuario = (): JSX.Element => {
     setSuccessMessages([]);
     setErrorMessages([]);
 
-    const newErrorMessages: string[] = [];
     const validRows: UserSchemaType[] = [];
 
     const headerMapping = {
@@ -96,31 +95,23 @@ export const CadastrarUsuario = (): JSX.Element => {
       email: "E-mail do Beneficiário", nascimento: "Data de Nascimento", nomeMae: "Nome da Mãe"
     };
 
-    data.forEach((row, index) => {
+    data.forEach((row) => {
       const rowData = {
         cpf: row[headerMapping.cpf], nome: row[headerMapping.nome], telefone: row[headerMapping.telefone],
         email: row[headerMapping.email], nascimento: row[headerMapping.nascimento], nomeMae: row[headerMapping.nomeMae]
       };
 
-      const result = userSchema.safeParse(rowData);
-
-      if (result.success) {
-        validRows.push(result.data);
-      } else {
-        result.error.issues.forEach((issue: ZodIssue) => {
-          const fieldName = Object.keys(headerMapping).find(key => key === issue.path[0]);
-          const friendlyFieldName = fieldName ? headerMapping[fieldName as keyof typeof headerMapping] : issue.path[0];
-          newErrorMessages.push(`Linha ${index + 2}: Coluna '${friendlyFieldName}' - ${issue.message}`);
-        });
+      // Only add rows that have at least some data
+      if (Object.values(rowData).some(value => value && String(value).trim() !== "")) {
+        validRows.push(rowData as UserSchemaType);
       }
     });
 
     if (validRows.length > 0) {
       setTableData(prevData => [...prevData, ...validRows]);
       setSuccessMessages([`Total de ${validRows.length} registros válidos foram importados.`]);
-    }
-    if (newErrorMessages.length > 0) {
-      setErrorMessages(newErrorMessages);
+    } else {
+      setErrorMessages(['Nenhum dado válido foi encontrado no arquivo.']);
     }
   };
 
