@@ -110,7 +110,7 @@ export const CadastrarUsuario = (): JSX.Element => {
         result.error.issues.forEach((issue: ZodIssue) => {
           const fieldName = issue.path[0] as keyof typeof headerMapping;
           const friendlyFieldName = headerMapping[fieldName] || fieldName;
-          const invalidValue = rowData[fieldName];
+          const invalidValue = row[headerMapping[fieldName]];
           const displayValue = invalidValue ? `"${invalidValue}"` : '(vazio)';
           
           newErrorMessages.push(`Linha ${index + 1}, campo "${friendlyFieldName}": valor ${displayValue} - ${issue.message}`);
