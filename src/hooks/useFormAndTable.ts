@@ -30,17 +30,18 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
   const [successMessages, setSuccessMessages] = useState<string[]>([]);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
+
   const handleCompanyInputChange = (field: keyof CompanySchemaType, value: string) => {
     setCompanyData(prev => ({ ...prev, [field]: value }));
-    if (formErrors[field]) {
-      setFormErrors(prev => ({ ...prev, [field]: undefined }));
+    if (formErrors[field as string]) {
+      setFormErrors(prev => ({ ...prev, [field as string]: undefined }));
     }
   };
 
   const handleUserInputChange = (field: keyof UserSchemaType, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (formErrors[field]) {
-      setFormErrors(prev => ({ ...prev, [field]: undefined }));
+    if (formErrors[field as string]) {
+      setFormErrors(prev => ({ ...prev, [field as string]: undefined }));
     }
   };
 
@@ -48,10 +49,8 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     setFormData({});
     setEditingIndex(null);
 
-    // CORREÇÃO: Remove todos os erros, exceto os relacionados ao 'companySchema'.
-    // Isso garante que os erros do formulário do usuário sejam limpos ao cancelar.
     const newErrors: Record<string, string | undefined> = {};
-    const companyKeys = Object.keys(companySchema.shape);
+    const companyKeys = Object.keys((companySchema as unknown as z.ZodObject<any>).shape);
 
     companyKeys.forEach(key => {
       if (formErrors[key]) {
@@ -66,29 +65,29 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     const companyResult = companySchema.safeParse(companyData);
     const userResult = userSchema.safeParse(formData);
 
-    if (companyResult.success && userResult.success) {
-      setFormErrors({});
-      // Agora o TypeScript sabe que .data existe em ambos os resultados
-      const newEntry = { ...companyResult.data, ...userResult.data };
-
-      if (editingIndex !== null) {
-        const updatedData = [...tableData];
-        updatedData[editingIndex] = newEntry;
-        setTableData(updatedData);
-      } else {
-        setTableData(prevData => [...prevData, newEntry]);
-      }
-      resetFormAndExitEditing();
-    } else {
-      const newErrors: Record<string, string | undefined> = {};
-      if (!companyResult.success) {
-        companyResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
-      }
-      if (!userResult.success) {
-        userResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
-      }
-      setFormErrors(newErrors);
+    const newErrors: Record<string, string | undefined> = {};
+    if (!companyResult.success) {
+      companyResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
     }
+    if (!userResult.success) {
+      userResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFormErrors(newErrors);
+      return;
+    }
+
+    const newEntry = { ...companyResult.data, ...userResult.data };
+
+    if (editingIndex !== null) {
+      const updatedData = [...tableData];
+      updatedData[editingIndex] = newEntry;
+      setTableData(updatedData);
+    } else {
+      setTableData(prevData => [...prevData, newEntry]);
+    }
+    resetFormAndExitEditing();
   };
 
   const handleEditItem = (indexToEdit: number) => {
@@ -165,8 +164,10 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     const filename = `${contractResult.data.numeroContrato}_${downloadFileName}`;
     const dataToDownload = tableData.map(item => {
       const row: Record<string, any> = {};
-      Object.keys(companySchema.shape).forEach(key => row[key] = item[key]);
-      Object.keys(userSchema.shape).forEach(key => row[headerMapping[key as keyof UserSchemaType]] = item[key]);
+      const companyShape = (companySchema as unknown as z.ZodObject<any>).shape;
+      const userShape = (userSchema as unknown as z.ZodObject<any>).shape;
+      Object.keys(companyShape).forEach(key => row[key] = item[key]);
+      Object.keys(userShape).forEach(key => row[headerMapping[key as keyof UserSchemaType]] = item[key]);
       return row;
     });
     downloadAsCSV(dataToDownload, filename);
