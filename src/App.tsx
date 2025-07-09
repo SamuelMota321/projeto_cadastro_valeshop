@@ -12,10 +12,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <Navigate to="/alterar-status-cartao" replace />,
   },
-  {
-    path: "/alterar-status-cartao",
-    element: <AlterarStatusCartao />,
-  },
+  // {
+  //   path: "/alterar-status-cartao",
+  //   element: <AlterarStatusCartao />,
+  // },
   // {
   //   path: "/alterar-matricula",
   //   element: <AlterarMatricula />,

@@ -12,6 +12,7 @@ import { SpreadsheetInstructions } from "../../components/ui/spreadsheetInstruct
 import { downloadAsCSV, downloadSampleCSV } from "../../lib/utils";
 import { companySchema, CompanySchemaType } from "../../lib/schemas/companySchema";
 import { userSchema, UserSchemaType } from "../../lib/schemas/userSchema";
+import InputMask from "react-input-mask";
 
 export const CadastrarUsuario = (): JSX.Element => {
   const [contractData, setContractData] = useState<Partial<CompanySchemaType>>({});
@@ -182,9 +183,9 @@ export const CadastrarUsuario = (): JSX.Element => {
 
   const expectedHeadersForUpload = ["CPF", "Nome Completo", "DDD/Telefone", "E-mail do Beneficiário", "Data de Nascimento", "Nome da Mãe"];
   const cadastroUsuarioInstructions = [
-    { field: "CPF", rule: "Deve conter 11 dígitos, sem pontos ou traços.", example: "Exemplo: 12345678900" },
+    { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
     { field: "Nome Completo", rule: "Escreva o nome completo, sem abreviações ou caracteres especiais.", example: "Exemplo: Joao da Silva Santos" },
-    { field: "DDD/Telefone", rule: "Informe o DDD junto com o número de celular, sem espaços ou parênteses.", example: "Exemplo: 61990909090" },
+    { field: "DDD/Telefone", rule: "Informe o DDD junto com o número de celular, sem espaços ou parênteses.", example: "Exemplo: 61990909090 ou (61) 99090-9090" },
     { field: "E-mail do Beneficiário", rule: "Utilize um formato de e-mail válido.", example: "Exemplo: exemplo@email.com" },
     { field: "Data de Nascimento", rule: "Siga o formato DD/MM/AAAA.", example: "Exemplo: 01/08/1990" },
     { field: "Nome da Mãe", rule: "Escreva o nome completo da mãe, sem abreviações.", example: "Exemplo: Maria da Silva Santos" }
@@ -206,13 +207,14 @@ export const CadastrarUsuario = (): JSX.Element => {
                   <div className="grid grid-cols-1  gap-4 mb-4">
                     <div>
                       <RequiredLabel>N° do contrato:</RequiredLabel>
-                      <Input
-                        type="text"
+                      <InputMask
+                        mask="999.999.999999.99/99"
                         value={contractData.numeroContrato || ""}
                         onChange={e => handleContractInputChange(e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="Digite o número do contrato"
-                      />
+                      >
+                        {(inputProps) => <Input {...inputProps} type="text" placeholder="000.000.000000.00/00" />}
+                      </InputMask>
                       {formErrors.numeroContrato && <p className="text-red-500 text-xs mt-1">{formErrors.numeroContrato == "Required" ? "Campo obrigatório" : formErrors.numeroContrato}</p>}
                     </div>
                   </div>
@@ -220,10 +222,14 @@ export const CadastrarUsuario = (): JSX.Element => {
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div>
                       <RequiredLabel>CPF:</RequiredLabel>
-                      <Input value={formData.cpf || ""}
+                      <InputMask
+                        mask="999.999.999-99"
+                        value={formData.cpf || ""}
                         onChange={e => handleUserInputChange('cpf', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="123.456.789-00" />
+                      >
+                        {(inputProps) => <Input {...inputProps} type="text" placeholder="000.000.000-00" />}
+                      </InputMask>
                       {formErrors.cpf && <p className="text-red-500 text-xs mt-1">{formErrors.cpf == "Required" ? "Campo obrigatório" : formErrors.cpf}</p>}
                     </div>
 
@@ -241,12 +247,14 @@ export const CadastrarUsuario = (): JSX.Element => {
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
                       <RequiredLabel>DDD/Telefone:</RequiredLabel>
-                      <Input
-                        type="number"
+                      <InputMask
+                        mask="(99) 99999-9999"
                         value={formData.telefone || ""}
                         onChange={e => handleUserInputChange('telefone', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="61990909090" />
+                      >
+                        {(inputProps) => <Input {...inputProps} type="text" placeholder="(00) 00000-0000" />}
+                      </InputMask>
                       {formErrors.telefone && <p className="text-red-500 text-xs mt-1">{formErrors.telefone == "Required" ? "Campo obrigatório" : formErrors.telefone}</p>}
                     </div>
 
