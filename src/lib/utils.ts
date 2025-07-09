@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const downloadAsCSV = (data: Record<string, any>[], filename: string) => {
-  const csv = Papa.unparse(data);
+  const csv = Papa.unparse(data, {delimiter: ';'});
   const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);

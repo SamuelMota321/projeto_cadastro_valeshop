@@ -8,118 +8,99 @@ import { TemporaryDataTable } from "../../components/ui/temporaryDataTable";
 import { FileUpload } from "../../components/ui/fileUpload";
 import { AlertBox } from "../../components/ui/alertBox";
 import { RequiredLabel } from "../../components/ui/requiredLabel";
-import { SpreadsheetInstructions } from "../../components/ui/SpreadsheetInstructions";
+import { SpreadsheetInstructions } from "../../components/ui/spreadsheetInstructions";
 import { downloadAsCSV, downloadSampleCSV } from "../../lib/utils";
+import { companySchema, CompanySchemaType } from "../../lib/schemas/companySchema";
 import { userSchema, UserSchemaType } from "../../lib/schemas/userSchema";
-import { ZodIssue } from "zod";
 
 export const CadastrarUsuario = (): JSX.Element => {
-  // Estados para os dados da empresa
-  const [razaoSocial, setRazaoSocial] = useState("");
-  const [cnpj, setCnpj] = useState("");
-  const [companyErrors, setCompanyErrors] = useState<{ razaoSocial?: string; cnpj?: string }>({});
-
-  // Estado unificado para os dados do formulário do usuário
+  const [contractData, setContractData] = useState<Partial<CompanySchemaType>>({});
   const [formData, setFormData] = useState<Partial<UserSchemaType>>({});
-
-  // Estado para armazenar os erros de validação do formulário manual
   const [formErrors, setFormErrors] = useState<Record<string, string | undefined>>({});
-
-  // Estados para a tabela, edição e alertas de feedback
-  const [tableData, setTableData] = useState<UserSchemaType[]>([]);
+  const [tableData, setTableData] = useState<(UserSchemaType & CompanySchemaType)[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [successMessages, setSuccessMessages] = useState<string[]>([]);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
-  // Atualiza o estado do formulário e limpa o erro do campo correspondente
-  const handleInputChange = (field: keyof UserSchemaType, value: string) => {
+  const handleContractInputChange = (value: string) => {
+    setContractData({ numeroContrato: value });
+    if (formErrors.numeroContrato) {
+      setFormErrors(prev => ({ ...prev, numeroContrato: undefined }));
+    }
+  };
+
+  const handleUserInputChange = (field: keyof UserSchemaType, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Garante que o erro do campo seja limpo quando o usuário digita
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
-  // Atualiza os campos da empresa e limpa os erros
-  const handleCompanyInputChange = (field: 'razaoSocial' | 'cnpj', value: string) => {
-    if (field === 'razaoSocial') {
-      setRazaoSocial(value);
-    } else {
-      setCnpj(value);
-    }
-    
-    // Limpa o erro do campo quando o usuário digita
-    if (companyErrors[field]) {
-      setCompanyErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-  };
-  // Limpa o formulário e sai do modo de edição
   const resetFormAndExitEditing = () => {
     setFormData({});
     setEditingIndex(null);
-    setFormErrors({});
+    setFormErrors(prevErrors => ({ numeroContrato: prevErrors.numeroContrato }));
   };
 
   const handleRegisterOrUpdateClick = () => {
-    // Validar campos da empresa primeiro
-    const newCompanyErrors: { razaoSocial?: string; cnpj?: string } = {};
-    
-    if (!razaoSocial.trim()) {
-      newCompanyErrors.razaoSocial = "Razão Social é obrigatória.";
-    }
-    
-    if (!cnpj.trim()) {
-      newCompanyErrors.cnpj = "CNPJ é obrigatório.";
-    }
-    
-    // Validar campos do usuário
-    const result = userSchema.safeParse(formData);
-    const newUserErrors: Record<string, string | undefined> = {};
-    
-    if (!result.success) {
-      result.error.issues.forEach(issue => {
-        const path = issue.path[0] as keyof UserSchemaType;
-        newUserErrors[path] = issue.message;
-      });
-    }
+    const contractResult = companySchema.safeParse(contractData);
+    const userResult = userSchema.safeParse(formData);
 
-    // Se há erros em qualquer campo, exibe todos e interrompe
-    if (Object.keys(newCompanyErrors).length > 0 || Object.keys(newUserErrors).length > 0) {
-      setCompanyErrors(newCompanyErrors);
-      setFormErrors(newUserErrors);
-      return;
-    }
+    if (contractResult.success && userResult.success) {
+      setFormErrors({});
 
-    const newEntry = result.data;
+      const newEntry = { ...contractResult.data, ...userResult.data };
 
-    if (editingIndex !== null) {
-      const updatedData = [...tableData];
-      updatedData[editingIndex] = newEntry;
-      setTableData(updatedData);
+      if (editingIndex !== null) {
+        const updatedData = [...tableData];
+        updatedData[editingIndex] = newEntry;
+        setTableData(updatedData);
+      } else {
+        setTableData(prevData => [...prevData, newEntry]);
+      }
+      resetFormAndExitEditing();
+
     } else {
-      setTableData(prevData => [...prevData, newEntry]);
+      const newErrors: Record<string, string | undefined> = {};
+      if (!contractResult.success) {
+        contractResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+      }
+      if (!userResult.success) {
+        userResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+      }
+      setFormErrors(newErrors);
     }
-    resetFormAndExitEditing();
   };
 
-  // Carrega um item da tabela no formulário para edição
   const handleEditItem = (indexToEdit: number) => {
-    setFormData(tableData[indexToEdit]);
+    const item = tableData[indexToEdit];
+    setContractData({ numeroContrato: item.numeroContrato });
+    setFormData({
+      cpf: item.cpf, nome: item.nome, telefone: item.telefone,
+      email: item.email, nascimento: item.nascimento, nomeMae: item.nomeMae,
+    });
     setEditingIndex(indexToEdit);
     setFormErrors({});
   };
 
-  // Remove um item da tabela
   const handleRemoveItem = (indexToRemove: number) => {
     setTableData(prevData => prevData.filter((_, index) => index !== indexToRemove));
   };
 
+
   const handleDataLoadedFromFile = (data: any[]) => {
     setSuccessMessages([]);
     setErrorMessages([]);
+    const contractResult = companySchema.safeParse(contractData);
+    if (!contractResult.success) {
+      setFormErrors({ numeroContrato: contractResult.error.issues[0].message });
+      alert("Por favor, preencha o N° do contrato antes de fazer o upload do arquivo.");
+      return;
+    }
+    const validContractData = contractResult.data;
 
     const newErrorMessages: string[] = [];
-    const validRows: UserSchemaType[] = [];
+    const validRows: (UserSchemaType & CompanySchemaType)[] = [];
 
     const headerMapping = {
       cpf: "CPF", nome: "Nome Completo", telefone: "DDD/Telefone",
@@ -131,42 +112,33 @@ export const CadastrarUsuario = (): JSX.Element => {
         cpf: row[headerMapping.cpf], nome: row[headerMapping.nome], telefone: row[headerMapping.telefone],
         email: row[headerMapping.email], nascimento: row[headerMapping.nascimento], nomeMae: row[headerMapping.nomeMae]
       };
+      const userResult = userSchema.safeParse(rowData);
 
-      const result = userSchema.safeParse(rowData);
-
-      if (result.success) {
-        validRows.push(result.data);
+      if (userResult.success) {
+        validRows.push({ ...validContractData, ...userResult.data });
       } else {
-        result.error.issues.forEach((issue: ZodIssue) => {
-          const fieldName = issue.path[0] as keyof typeof headerMapping;
-          const friendlyFieldName = headerMapping[fieldName] || fieldName;
-          const invalidValue = row[headerMapping[fieldName]];
-          const displayValue = invalidValue ? `"${invalidValue}"` : '(vazio)';
-
-          newErrorMessages.push(`Linha ${index + 4}, campo "${friendlyFieldName}": valor ${displayValue} - ${issue.message}`);
-        });
+        const errorDetails = userResult.error.issues.map(issue => issue.message).join('; ');
+        newErrorMessages.push(`Linha ${index + 2}: ${errorDetails}`); // +2 para pular o cabeçalho do arquivo
       }
     });
-
-    if (newErrorMessages.length > 0) {
-      setErrorMessages(newErrorMessages);
-    }
 
     if (validRows.length > 0) {
       setTableData(prevData => [...prevData, ...validRows]);
       setSuccessMessages([`Total de ${validRows.length} registros válidos foram importados.`]);
     }
-    else if (newErrorMessages.length === 0) {
+    if (newErrorMessages.length > 0) {
+      setErrorMessages(newErrorMessages);
+    } else if (data.length > 0 && validRows.length === 0) {
+      setErrorMessages(['Nenhum dado válido foi encontrado no arquivo. Verifique o formato e o conteúdo das colunas.']);
+    } else if (data.length === 0) {
       setErrorMessages(['O arquivo parece estar vazio ou não contém dados para importar.']);
     }
   };
 
-  // Gera e baixa a planilha de exemplo
+
   const handleDownloadSample = () => {
     const sampleData: string[][] = [
       ["", "PLANILHA PARA CADASTRO DOS DADOS"],
-      ["CNPJ:", cnpj],
-      ["RAZÃO SOCIAL:", razaoSocial],
       [],
       ["CPF", "Nome Completo", "DDD/Telefone", "E-mail do Beneficiário", "Data de Nascimento", "Nome da Mãe"],
       ["OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO"],
@@ -182,22 +154,33 @@ export const CadastrarUsuario = (): JSX.Element => {
     downloadSampleCSV(sampleData, "exemplo_cadastro_usuario");
   };
 
-  // Gera e baixa os dados da tabela
   const handleDownload = () => {
-    if (!razaoSocial || !cnpj) {
-      alert("Por favor, preencha a Razão Social e o CNPJ da empresa antes de baixar.");
+    setErrorMessages([]);
+    setSuccessMessages([]);
+    const contractResult = companySchema.safeParse(contractData);
+    if (!contractResult.success) {
+      setFormErrors({ numeroContrato: contractResult.error.issues[0].message });
+      alert("Por favor, preencha o N° do contrato antes de baixar.");
       return;
     }
+    if (tableData.length === 0) {
+      alert("Não há dados na tabela para baixar.");
+      return;
+    }
+
+    const filename = `${contractResult.data.numeroContrato}_Cadastrar_Usuario`;
     const dataToDownload = tableData.map(item => ({
-      "CNPJ": cnpj, "Razão Social": razaoSocial, "CPF": item.cpf,
-      "Nome Completo": item.nome, "DDD/Telefone": item.telefone,
-      "E-mail do Beneficiário": item.email, "Data de Nascimento": item.nascimento, "Nome da Mãe": item.nomeMae,
+      "CPF": item.cpf,
+      "Nome Completo": item.nome,
+      "DDD/Telefone": item.telefone,
+      "E-mail do Beneficiário": item.email,
+      "Data de Nascimento": item.nascimento,
+      "Nome da Mãe": item.nomeMae,
     }));
-    downloadAsCSV(dataToDownload, 'cadastro_usuarios_preenchido');
+    downloadAsCSV(dataToDownload, filename);
   };
 
   const expectedHeadersForUpload = ["CPF", "Nome Completo", "DDD/Telefone", "E-mail do Beneficiário", "Data de Nascimento", "Nome da Mãe"];
-
   const cadastroUsuarioInstructions = [
     { field: "CPF", rule: "Deve conter 11 dígitos, sem pontos ou traços.", example: "Exemplo: 12345678900" },
     { field: "Nome Completo", rule: "Escreva o nome completo, sem abreviações ou caracteres especiais.", example: "Exemplo: Joao da Silva Santos" },
@@ -219,57 +202,86 @@ export const CadastrarUsuario = (): JSX.Element => {
                 <div className="flex-1 px-8 py-6 min-w-0">
                   <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">Cadastrar Usuário</h1>
 
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+
+                  <div className="grid grid-cols-1  gap-4 mb-4">
                     <div>
-                      <RequiredLabel error={companyErrors.razaoSocial}>Razão Social:</RequiredLabel>
-                      <Input 
-                        value={razaoSocial} 
-                        onChange={e => handleCompanyInputChange('razaoSocial', e.target.value)} 
-                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" 
-                        placeholder="Nome da empresa" 
+                      <RequiredLabel>N° do contrato:</RequiredLabel>
+                      <Input
+                        type="text"
+                        value={contractData.numeroContrato || ""}
+                        onChange={e => handleContractInputChange(e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="Digite o número do contrato"
                       />
-                    </div>
-                    <div>
-                      <RequiredLabel error={companyErrors.cnpj}>N° do CNPJ:</RequiredLabel>
-                      <Input 
-                        value={cnpj} 
-                        onChange={e => handleCompanyInputChange('cnpj', e.target.value)} 
-                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" 
-                        placeholder="Digite o CNPJ" 
-                      />
+                      {formErrors.numeroContrato && <p className="text-red-500 text-xs mt-1">{formErrors.numeroContrato == "Required" ? "Campo obrigatório" : formErrors.numeroContrato}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div>
-                      <RequiredLabel error={formErrors.cpf}>CPF:</RequiredLabel>
-                      <Input value={formData.cpf || ""} onChange={e => handleInputChange('cpf', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="12345678900" />
+                      <RequiredLabel>CPF:</RequiredLabel>
+                      <Input value={formData.cpf || ""}
+                        onChange={e => handleUserInputChange('cpf', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="123.456.789-00" />
+                      {formErrors.cpf && <p className="text-red-500 text-xs mt-1">{formErrors.cpf == "Required" ? "Campo obrigatório" : formErrors.cpf}</p>}
                     </div>
+
                     <div className="col-span-2">
-                      <RequiredLabel error={formErrors.nome}>Nome Completo:</RequiredLabel>
-                      <Input value={formData.nome || ""} onChange={e => handleInputChange('nome', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="João da Silva Santos" />
+                      <RequiredLabel>Nome Completo:</RequiredLabel>
+                      <Input
+                        value={formData.nome || ""}
+                        onChange={e => handleUserInputChange('nome', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="João da Silva Santos" />
+                      {formErrors.nome && <p className="text-red-500 text-xs mt-1">{formErrors.nome == "Required" ? "Campo obrigatório" : formErrors.nome}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
-                      <RequiredLabel error={formErrors.telefone}>DDD/Telefone:</RequiredLabel>
-                      <Input value={formData.telefone || ""} onChange={e => handleInputChange('telefone', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="61990909090" />
+                      <RequiredLabel>DDD/Telefone:</RequiredLabel>
+                      <Input
+                        type="number"
+                        value={formData.telefone || ""}
+                        onChange={e => handleUserInputChange('telefone', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="61990909090" />
+                      {formErrors.telefone && <p className="text-red-500 text-xs mt-1">{formErrors.telefone == "Required" ? "Campo obrigatório" : formErrors.telefone}</p>}
                     </div>
+
                     <div className="col-span-2">
-                      <RequiredLabel error={formErrors.email}>E-mail do Beneficiário:</RequiredLabel>
-                      <Input value={formData.email || ""} onChange={e => handleInputChange('email', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="exemplo@email.com" />
+                      <RequiredLabel>E-mail do Beneficiário:</RequiredLabel>
+                      <Input
+                        value={formData.email || ""}
+                        onChange={e => handleUserInputChange('email', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="exemplo@email.com" />
+                      {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email == "Required" ? "Campo obrigatório" : formErrors.email}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
-                      <RequiredLabel error={formErrors.nascimento}>Data de Nascimento:</RequiredLabel>
-                      <Input value={formData.nascimento || ""} onChange={e => handleInputChange('nascimento', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="01/08/1990" />
+                      <RequiredLabel>Data de Nascimento:</RequiredLabel>
+                      <Input
+                        type="date"
+                        value={formData.nascimento || ""}
+                        onChange={e => handleUserInputChange('nascimento', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                      />
+                      {formErrors.nascimento && <p className="text-red-500 text-xs mt-1">{formErrors.nascimento == "Required" ? "Campo obrigatório" : formErrors.nascimento}</p>}
                     </div>
+
                     <div className="col-span-2">
-                      <RequiredLabel error={formErrors.nomeMae}>Nome da mãe:</RequiredLabel>
-                      <Input value={formData.nomeMae || ""} onChange={e => handleInputChange('nomeMae', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Maria da Silva Santos" />
+                      <RequiredLabel>Nome da mãe:</RequiredLabel>
+                      <Input
+                        value={formData.nomeMae || ""}
+                        onChange={e => handleUserInputChange('nomeMae', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="Maria da Silva Santos"
+                      />
+                      {formErrors.nomeMae && <p className="text-red-500 text-xs mt-1">{formErrors.nomeMae == "Required" ? "Campo obrigatório" : formErrors.nomeMae}</p>}
                     </div>
                   </div>
 
@@ -297,8 +309,6 @@ export const CadastrarUsuario = (): JSX.Element => {
                     instructions={cadastroUsuarioInstructions}
                     onDownloadSample={handleDownloadSample}
                   />
-
-
 
                   <TemporaryDataTable
                     headers={["CPF", "Nome", "Telefone", "E-mail", "Nascimento", "Nome da Mãe"]}
