@@ -208,7 +208,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     <div>
                       <RequiredLabel>N° do contrato:</RequiredLabel>
                       <InputMask
-                        mask="999.999.999999.99/99"
+                        mask="999.999.999999.99-99"
                         value={contractData.numeroContrato || ""}
                         onChange={e => handleContractInputChange(e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
@@ -272,12 +272,14 @@ export const CadastrarUsuario = (): JSX.Element => {
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
                       <RequiredLabel>Data de Nascimento:</RequiredLabel>
-                      <Input
-                        type="date"
+                      <InputMask
+                        mask="99/99/9999"
                         value={formData.nascimento || ""}
                         onChange={e => handleUserInputChange('nascimento', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                      />
+                      >
+                        {(inputProps) => <Input {...inputProps} type="text" placeholder="00/00/0000" />}
+                      </InputMask>
                       {formErrors.nascimento && <p className="text-red-500 text-xs mt-1">{formErrors.nascimento == "Required" ? "Campo obrigatório" : formErrors.nascimento}</p>}
                     </div>
 
