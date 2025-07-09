@@ -1,6 +1,5 @@
 import { Lightbulb } from "lucide-react";
-import { Button } from "./button"; // Importe o botão
-
+import { Button } from "./button"; 
 interface Instruction {
   field: string;
   rule: string;
@@ -9,7 +8,7 @@ interface Instruction {
 
 interface SpreadsheetInstructionsProps {
   instructions: Instruction[];
-  onDownloadSample: () => void; // Prop para a função de download
+  onDownloadSample: () => void; 
 }
 
 export const SpreadsheetInstructions = ({ instructions, onDownloadSample }: SpreadsheetInstructionsProps): JSX.Element => {
@@ -20,7 +19,6 @@ export const SpreadsheetInstructions = ({ instructions, onDownloadSample }: Spre
           <Lightbulb className="h-6 w-6 text-yellow-500 mr-3" />
           <h3 className="text-lg font-semibold text-gray-800">Como preencher a planilha</h3>
         </div>
-        {/* Botão para baixar a planilha de exemplo */}
         <Button
           variant="outline"
           onClick={onDownloadSample}

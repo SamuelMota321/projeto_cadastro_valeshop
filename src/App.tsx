@@ -10,7 +10,7 @@ import { CadastrarUsuario } from "./screens/CadastrarUsuario";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/alterar-status-cartao" replace />,
+    element: <Navigate to="/cadastrar-usuario" replace />,
   },
   // {
   //   path: "/alterar-status-cartao",
