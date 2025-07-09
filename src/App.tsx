@@ -1,5 +1,5 @@
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
-import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
+// import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
 // import { AlterarMatricula } from "./screens/AlterarMatricula";
 import { CadastrarUsuario } from "./screens/CadastrarUsuario";
 // import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario"
