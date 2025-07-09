@@ -1,5 +1,5 @@
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
-// import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
+import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
 // import { AlterarMatricula } from "./screens/AlterarMatricula";
 import { CadastrarUsuario } from "./screens/CadastrarUsuario";
 // import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario"
@@ -12,10 +12,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <Navigate to="/alterar-status-cartao" replace />,
   },
-  // {
-  //   path: "/alterar-status-cartao",
-  //   element: <AlterarStatusCartao />,
-  // },
+  {
+    path: "/alterar-status-cartao",
+    element: <AlterarStatusCartao />,
+  },
   // {
   //   path: "/alterar-matricula",
   //   element: <AlterarMatricula />,
