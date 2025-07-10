@@ -8,7 +8,7 @@ import { FileUpload } from "../../components/ui/fileUpload";
 import { AlertBox } from "../../components/ui/alertBox";
 import { RequiredLabel } from "../../components/ui/requiredLabel";
 import { SpreadsheetInstructions } from "../../components/ui/spreadsheetInstructions";
-import { companySchema, CompanySchemaType } from "../../lib/schemas/companySchema";
+import { companySchema } from "../../lib/schemas/companySchema";
 import { userSchema } from "../../lib/schemas/userSchema";
 import InputMask from "react-input-mask";
 import { useFormAndTable } from "../../hooks/useFormAndTable";
@@ -18,9 +18,8 @@ const pageConfigs = {
     cpf: "CPF", nome: "Nome Completo", telefone: "DDD/Telefone",
     email: "E-mail do Beneficiário", nascimento: "Data de Nascimento", nomeMae: "Nome da Mãe"
   },
-  sampleDataGenerator: (companyData: Partial<CompanySchemaType>) => [
+  sampleDataGenerator: () => [
     ["", "PLANILHA PARA CADASTRO DOS DADOS"],
-    ["N° do Contrato:", companyData.numeroContrato || ""],
     [],
     ["CPF", "Nome Completo", "DDD/Telefone", "E-mail do Beneficiário", "Data de Nascimento", "Nome da Mãe"],
     ["OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO"],
@@ -33,7 +32,7 @@ const pageConfigs = {
       "Nome completo da mãe do funcionário\nExemplo: Maria da Silva Santos"
     ]
   ],
-  downloadFileName: "Cadastrar_Usuario",
+  downloadFileNamePrefix: "Cadastrar_Usuario",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
     { field: "Nome Completo", rule: "Escreva o nome completo, sem abreviações ou caracteres especiais.", example: "Exemplo: Joao da Silva Santos" },
@@ -46,11 +45,12 @@ const pageConfigs = {
 
 export const CadastrarUsuario = (): JSX.Element => {
   const { states, handlers } = useFormAndTable({
-    userSchema,
+    genericSchema: userSchema,
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileName,
+    downloadFileNamePrefix: pageConfigs.downloadFileNamePrefix,
+    contractFieldName: 'numeroContrato' // Informa ao hook qual campo usar para o nome do arquivo
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -83,7 +83,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                           />
                         )}
                       </InputMask>
-                      {states.formErrors.numeroContrato && <p className="text-red-500 text-xs mt-1">{states.formErrors.numeroContrato}</p>}
+                      {states.formErrors.numeroContrato && <p className="text-red-500 text-xs mt-1">{states.formErrors.numeroContrato === "Required" ? "Campo Obrigatório" : states.formErrors.numeroContrato}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 mb-4">
@@ -103,12 +103,12 @@ export const CadastrarUsuario = (): JSX.Element => {
                           />
                         )}
                       </InputMask>
-                      {states.formErrors.cpf && <p className="text-red-500 text-xs mt-1">{states.formErrors.cpf}</p>}
+                      {states.formErrors.cpf && <p className="text-red-500 text-xs mt-1">{states.formErrors.cpf === "Required" ? "Campo Obrigatório" : states.formErrors.cpf}</p>}
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>Nome Completo:</RequiredLabel>
                       <Input value={states.formData.nome || ""} onChange={e => handlers.handleUserInputChange('nome', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="João da Silva Santos" />
-                      {states.formErrors.nome && <p className="text-red-500 text-xs mt-1">{states.formErrors.nome}</p>}
+                      {states.formErrors.nome && <p className="text-red-500 text-xs mt-1">{states.formErrors.nome === "Required" ? "Campo Obrigatório" : states.formErrors.nome}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 mb-8">
@@ -128,12 +128,12 @@ export const CadastrarUsuario = (): JSX.Element => {
                           />
                         )}
                       </InputMask>
-                      {states.formErrors.telefone && <p className="text-red-500 text-xs mt-1">{states.formErrors.telefone}</p>}
+                      {states.formErrors.telefone && <p className="text-red-500 text-xs mt-1">{states.formErrors.telefone === "Required" ? "Campo Obrigatório" : states.formErrors.telefone}</p>}
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>E-mail do Beneficiário:</RequiredLabel>
                       <Input value={states.formData.email || ""} onChange={e => handlers.handleUserInputChange('email', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="exemplo@email.com" />
-                      {states.formErrors.email && <p className="text-red-500 text-xs mt-1">{states.formErrors.email}</p>}
+                      {states.formErrors.email && <p className="text-red-500 text-xs mt-1">{states.formErrors.email === "Required" ? "Campo Obrigatório" : states.formErrors.email}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 mb-8">
@@ -153,12 +153,12 @@ export const CadastrarUsuario = (): JSX.Element => {
                           />
                         )}
                       </InputMask>
-                      {states.formErrors.nascimento && <p className="text-red-500 text-xs mt-1">{states.formErrors.nascimento}</p>}
+                      {states.formErrors.nascimento && <p className="text-red-500 text-xs mt-1">{states.formErrors.nascimento === "Required" ? "Campo Obrigatório" : states.formErrors.nascimento}</p>}
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>Nome da mãe:</RequiredLabel>
                       <Input value={states.formData.nomeMae || ""} onChange={e => handlers.handleUserInputChange('nomeMae', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Maria da Silva Santos" />
-                      {states.formErrors.nomeMae && <p className="text-red-500 text-xs mt-1">{states.formErrors.nomeMae}</p>}
+                      {states.formErrors.nomeMae && <p className="text-red-500 text-xs mt-1">{states.formErrors.nomeMae === "Required" ? "Campo Obrigatório" : states.formErrors.nomeMae}</p>}
                     </div>
                   </div>
                   <div className="flex justify-end space-x-4 mb-6">
@@ -172,7 +172,7 @@ export const CadastrarUsuario = (): JSX.Element => {
 
                   <AlertBox variant="error" title="Erros na Importação" messages={states.errorMessages} onClose={() => handlers.setErrorMessages([])} />
                   <AlertBox variant="success" title="Importação Concluída" messages={states.successMessages} onClose={() => handlers.setSuccessMessages([])} />
-                  
+
                   <div className="mb-6">
                     <FileUpload
                       expectedHeaders={expectedHeadersForUpload}
@@ -185,9 +185,9 @@ export const CadastrarUsuario = (): JSX.Element => {
                     onDownloadSample={handlers.handleDownloadSample}
                   />
                   <TemporaryDataTable
-                    headers={["N° do Contrato", "CPF", "Nome", "Telefone", "E-mail", "Nascimento", "Nome da Mãe"]}
+                    headers={["CPF", "Nome", "Telefone", "E-mail", "Nascimento", "Nome da Mãe"]}
                     data={states.tableData}
-                    dataKeys={["numeroContrato", "cpf", "nome", "telefone", "email", "nascimento", "nomeMae"]}
+                    dataKeys={["cpf", "nome", "telefone", "email", "nascimento", "nomeMae"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
                     onDownloadClick={handlers.handleDownload}

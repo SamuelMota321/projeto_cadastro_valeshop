@@ -1,1 +1,1 @@
-// export { AlterarStatusCartao } from "./AlterarStatusCartao";
+export { AlterarStatusCartao } from "./AlterarStatusCartao";

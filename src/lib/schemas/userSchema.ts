@@ -1,17 +1,5 @@
 import { z } from 'zod';
-
-const nameRegex = /^[a-zA-Z\u00C0-\u017F'\s]+$/;
-const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
-
-const onlyNumbers = (value: string) => value.replace(/\D/g, '');
-const capitalizeName = (name: string) => {
-  return name
-    .trim()
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
+import { capitalizeName, dateRegex, nameRegex, onlyNumbers } from './basicFunctions';
 
 export const userSchema = z.object({
   cpf: z.string()
