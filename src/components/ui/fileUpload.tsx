@@ -53,10 +53,12 @@ export const FileUpload = ({ expectedHeaders, onDataLoaded, onError }: FileUploa
           const row = rows[i];
           if (row && row.length > 0) {
             const rowString = row.map(cell => String(cell).trim()).join(' ');
-            // Look for the specific header row
-            if (rowString.includes('CPF') && 
-                rowString.includes('Nome Completo') && 
-                rowString.includes('E-mail do Beneficiário') &&
+            // Look for the header row by checking if it contains the expected headers
+            const hasExpectedHeaders = expectedHeaders.some(header => 
+              rowString.includes(header)
+            );
+            
+            if (hasExpectedHeaders &&
                 !rowString.includes('OBRIGATÓRIO') &&
                 !rowString.includes('Exemplo:')) {
               headerRowIndex = i;
