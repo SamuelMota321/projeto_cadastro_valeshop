@@ -9,7 +9,7 @@ interface modalProps {
   onNao: () => void;
 }
 
-export const modal: React.FC<modalProps> = ({ isOpen, onSim, onNao }) => {
+export const Modal: React.FC<modalProps> = ({ isOpen, onSim, onNao }) => {
   if (!isOpen) {
     return null;
   }

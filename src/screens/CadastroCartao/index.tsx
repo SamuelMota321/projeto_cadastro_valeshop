@@ -1,0 +1,1 @@
+export { CadastroCartao } from "./CadastroCartao";
