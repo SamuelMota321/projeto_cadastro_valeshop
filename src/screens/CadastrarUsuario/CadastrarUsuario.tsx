@@ -53,6 +53,11 @@ export const CadastrarUsuario = (): JSX.Element => {
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
+  const cardStatusInstructionKeywords = [
+    "OBRIGATÓRIO", "Exemplo:", "CPF do benefíciário", "Nome completo do funcionário",
+    "Informe o DDD e nº telefone celular", "Informe o e-mail do beneficiário",
+    "Data de nascimento do beneficiário", "Nome completo da mãe do funcionário"
+  ];
 
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
@@ -69,7 +74,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     <div>
                       <RequiredLabel>N° do contrato:</RequiredLabel>
                       <InputMask
-                        mask="999.999.999999.99-99"
+                        mask="999.999.9999.99-99"
                         value={states.companyData.numeroContrato || ""}
                         onChange={e => handlers.handleCompanyInputChange('numeroContrato', e.target.value)}
                       >
@@ -77,7 +82,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                           <Input
                             {...inputProps}
                             type="text"
-                            placeholder="000.000.000000.00-00"
+                            placeholder="000.000.0000.00-00"
                             className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                           />
                         )}
@@ -175,6 +180,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                   <div className="mb-6">
                     <FileUpload
                       expectedHeaders={expectedHeadersForUpload}
+                      instructionalKeywords={cardStatusInstructionKeywords} // <-- PASSE A PROPRIEDADE
                       onDataLoaded={handlers.handleDataLoadedFromFile}
                       onError={(errorMessage) => handlers.setErrorMessages([errorMessage])}
                     />

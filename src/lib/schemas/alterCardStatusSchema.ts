@@ -14,6 +14,7 @@ export const alterCardStatusSchema = z.object({
     .transform(capitalizeName),
   movimentacao: z.string()
     .min(1, { message: "Tipo de movimentação é obrigatório." })
-    .regex(movimentacaoRegex, { message: "Movimentação deve ser: Ativar, Cancelar, Inativar ou Bloquear." }),
+    .regex(movimentacaoRegex, { message: "Movimentação deve ser: Ativar, Cancelar, Inativar ou Bloquear." })
+    .transform(capitalizeName),
 });
 export type alterCardStatusSchemaType = z.infer<typeof alterCardStatusSchema>;

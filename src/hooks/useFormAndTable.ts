@@ -38,7 +38,6 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     }
   };
 
-  // Renomeado para maior clareza
   const handleDataInputChange = (field: keyof DataSchemaType, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (formErrors[field as string]) {
@@ -61,7 +60,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
 
   const handleRegisterOrUpdateClick = () => {
     const companyResult = companySchema.safeParse(companyData);
-    const dataResult = dataSchema.safeParse(formData); // Alterado de userResult para dataResult
+    const dataResult = dataSchema.safeParse(formData); 
 
     if (!companyResult.success || !dataResult.success) {
       const newErrors: Record<string, string | undefined> = {};
@@ -154,7 +153,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
       const newErrors: Record<string, string | undefined> = {};
       contractResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
       setFormErrors(newErrors);
-      alert("Por favor, preencha os dados da empresa antes de baixar.");
+      alert("Por favor, preencha o N° do contrato antes de baixar.");
       return;
     }
     if (tableData.length === 0) {
@@ -179,7 +178,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     handlers: {
       resetFormAndExitEditing,
       handleCompanyInputChange,
-      handleDataInputChange, // Nome da função atualizado
+      handleDataInputChange, 
       handleRegisterOrUpdateClick,
       handleEditItem,
       handleRemoveItem,

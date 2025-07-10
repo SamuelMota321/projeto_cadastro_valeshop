@@ -1,1 +1,1 @@
-// export { AlterarMatricula } from "./AlterarMatricula";
+export { AlterarMatricula } from "./AlterarMatricula";

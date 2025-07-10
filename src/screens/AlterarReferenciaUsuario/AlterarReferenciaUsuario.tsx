@@ -44,6 +44,10 @@ export const AlterarReferencia = (): JSX.Element => {
     downloadFileName: pageConfigs.downloadFileNamePrefix,
   });
 
+  const cardStatusInstructionKeywords = [
+    "OBRIGATÓRIO", "Exemplo:", "CPF do benefíciário", "Nome do Departamento"
+  ];
+
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
 
   return (
@@ -157,6 +161,7 @@ export const AlterarReferencia = (): JSX.Element => {
                   <div className="mb-6">
                     <FileUpload
                       expectedHeaders={expectedHeadersForUpload}
+                      instructionalKeywords={cardStatusInstructionKeywords} 
                       onDataLoaded={handlers.handleDataLoadedFromFile}
                       onError={(errorMessage) => handlers.setErrorMessages([errorMessage])}
                     />

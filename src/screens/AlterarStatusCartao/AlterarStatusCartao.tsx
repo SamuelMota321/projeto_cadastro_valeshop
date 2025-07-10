@@ -49,6 +49,11 @@ export const AlterarStatusCartao = (): JSX.Element => {
     downloadFileName: pageConfigs.downloadFileNamePrefix,
   });
 
+  const cardStatusInstructionKeywords = [
+    "OBRIGATÓRIO", "Exemplo:", "CPF do benefíciário", "Nome completo do funcionário",
+    "Informe o tipo de movimentação"
+  ];
+
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
 
   return (
@@ -68,7 +73,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                     <div>
                       <RequiredLabel>N° do contrato:</RequiredLabel>
                       <InputMask
-                        mask="999.999.999999.99-99"
+                        mask="999.999.9999.99-99"
                         value={states.companyData.numeroContrato || ""}
                         onChange={e => handlers.handleCompanyInputChange('numeroContrato', e.target.value)}
                       >
@@ -76,7 +81,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                           <Input
                             {...inputProps}
                             type="text"
-                            placeholder="000.000.000000.00-00"
+                            placeholder="000.000.0000.00-00"
                             className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                           />
                         )}
@@ -121,7 +126,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                       <Select
                         value={states.formData.movimentacao || ""}
                         onValueChange={value => handlers.handleDataInputChange('movimentacao', value)}
-                        >
+                      >
                         <SelectTrigger
                           className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                         >
@@ -163,6 +168,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                   <div className="mb-6">
                     <FileUpload
                       expectedHeaders={expectedHeadersForUpload}
+                      instructionalKeywords={cardStatusInstructionKeywords} // <-- PASSE A PROPRIEDADE
                       onDataLoaded={handlers.handleDataLoadedFromFile}
                       onError={(errorMessage) => handlers.setErrorMessages([errorMessage])}
                     />
