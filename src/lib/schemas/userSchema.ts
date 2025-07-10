@@ -5,7 +5,6 @@ export const userSchema = z.object({
   cpf: z.string()
     .transform(onlyNumbers)
     .pipe(z.string().length(11, { message: "CPF deve conter 11 dígitos." })),
-
   nome: z.string()
     .min(1)
     .regex(nameRegex, { message: "Nome deve conter apenas letras e espaços." })
@@ -13,7 +12,6 @@ export const userSchema = z.object({
       message: "É necessário inserir o nome e sobrenome."
     })
     .transform(capitalizeName),
-
   telefone: z.string()
     .transform(onlyNumbers)
     .pipe(z.string().min(11, { message: "Telefone deve conter no mínimo 11 dígitos." })),

@@ -4,7 +4,8 @@ import { CadastrarUsuario } from "./screens/CadastrarUsuario";
 import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario";
 import { AlterarMatricula } from "./screens/AlterarMatricula";
 import { CadastrarAlterarDadosBancarios } from "./screens/CadastrarAlterarDadosBancarios";
-// import { NovoCadastroReferencia } from "./screens/NovoCadastroReferencia";
+import { NovoCadastroReferencia } from "./screens/NovoCadastroReferencia";
+import { CadastrarMotorista } from "./screens/CadastrarMotorista";
 
 
 const router = createBrowserRouter([
@@ -32,10 +33,14 @@ const router = createBrowserRouter([
     path: "/alterar-dados-bancarios",
     element: <CadastrarAlterarDadosBancarios />,
   },
-  // {
-  //   path: "/novo-cadastro-referencia",
-  //   element: <NovoCadastroReferencia />,
-  // },
+  {
+    path: "/novo-cadastro-referencia",
+    element: <NovoCadastroReferencia />,
+  },
+  {
+    path: "/cadastrar-motorista",
+    element: <CadastrarMotorista />,
+  },
 ]);
 
 export const App = () => {

@@ -60,7 +60,7 @@ export const AlterarMatricula = (): JSX.Element => {
                 <Nav />
                 <div className="flex-1 px-8 py-6 min-w-0">
                   <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
-                    Alteração Matrícula
+                    Alteração de Matrícula
                   </h1>
                   <div className="mb-6">
                     <RequiredLabel>N° do contrato:</RequiredLabel>
