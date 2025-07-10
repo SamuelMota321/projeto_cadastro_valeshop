@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom"
 import { AlterarStatusCartao } from "./screens/AlterarStatusCartao";
 // import { AlterarMatricula } from "./screens/AlterarMatricula";
 import { CadastrarUsuario } from "./screens/CadastrarUsuario";
-// import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario"
+import { AlterarReferencia } from "./screens/AlterarReferenciaUsuario/AlterarReferenciaUsuario";
 // import { CadastrarAlterarDadosBancarios } from "./screens/CadastrarAlterarDadosBancarios";
 // import { NovoCadastroReferencia } from "./screens/NovoCadastroReferencia";
 
@@ -24,10 +24,10 @@ const router = createBrowserRouter([
     path: "/cadastrar-usuario",
     element: <CadastrarUsuario />,
   },
-  // {
-  //   path: "/alterar-referencia",
-  //   element: <AlterarReferencia />,
-  // },
+  {
+    path: "/alterar-referencia",
+    element: <AlterarReferencia />,
+  },
   // {
   //   path: "/alterar-dados-bancarios",
   //   element: <CadastrarAlterarDadosBancarios />,

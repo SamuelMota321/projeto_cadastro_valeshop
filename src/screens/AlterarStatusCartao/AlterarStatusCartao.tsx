@@ -11,7 +11,7 @@ import { SpreadsheetInstructions } from "../../components/ui/spreadsheetInstruct
 import { companySchema } from "../../lib/schemas/companySchema";
 import InputMask from "react-input-mask";
 import { useFormAndTable } from "../../hooks/useFormAndTable";
-import { alterCardStatusSchema } from "../../lib/schemas/alterCardStatus";
+import { alterCardStatusSchema } from "../../lib/schemas/alterCardStatusSchema";
 import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 
@@ -42,12 +42,11 @@ const pageConfigs = {
 
 export const AlterarStatusCartao = (): JSX.Element => {
   const { states, handlers } = useFormAndTable({
-    genericSchema: alterCardStatusSchema,
+    dataSchema: alterCardStatusSchema,
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileNamePrefix: pageConfigs.downloadFileNamePrefix,
-    contractFieldName: "numeroContrato"
+    downloadFileName: pageConfigs.downloadFileNamePrefix,
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -91,7 +90,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                     <InputMask
                       mask="999.999.999-99"
                       value={states.formData.cpf || ""}
-                      onChange={e => handlers.handleUserInputChange('cpf', e.target.value)}
+                      onChange={e => handlers.handleDataInputChange('cpf', e.target.value)}
                     >
                       {(inputProps) => (
                         <Input
@@ -110,7 +109,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                       <RequiredLabel>Nome Completo:</RequiredLabel>
                       <Input
                         value={states.formData.nome || ""}
-                        onChange={e => handlers.handleUserInputChange('nome', e.target.value)}
+                        onChange={e => handlers.handleDataInputChange('nome', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                         placeholder="João da Silva Santos"
                       />
@@ -121,7 +120,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                       <RequiredLabel>Tipo de Movimentação:</RequiredLabel>
                       <Select
                         value={states.formData.movimentacao || ""}
-                        onValueChange={value => handlers.handleUserInputChange('movimentacao', value)}
+                        onValueChange={value => handlers.handleDataInputChange('movimentacao', value)}
                         >
                         <SelectTrigger
                           className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"

@@ -4,36 +4,33 @@ import { downloadAsCSV, downloadSampleCSV } from "../lib/utils";
 
 type AnyZodObject = ZodObject<any, any, any>;
 
-interface UseFormAndTableProps<C extends AnyZodObject, U extends AnyZodObject> {
+interface UseFormAndTableProps<T extends AnyZodObject, C extends AnyZodObject> {
+  dataSchema: T;
   companySchema: C;
-  genericSchema: U;
-  headerMapping: Record<keyof z.infer<U>, string>;
+  headerMapping: Record<keyof z.infer<T>, string>;
   sampleDataGenerator: (companyData: Partial<z.infer<C>>) => string[][];
-  downloadFileNamePrefix: string;
-  contractFieldName: keyof z.infer<C>;
+  downloadFileName: string;
 }
 
-export const useFormAndTable = <C extends AnyZodObject, U extends AnyZodObject>({
+export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>({
+  dataSchema,
   companySchema,
-  genericSchema,
   headerMapping,
   sampleDataGenerator,
-  downloadFileNamePrefix,
-  contractFieldName,
-}: UseFormAndTableProps<C, U>) => {
+  downloadFileName,
+}: UseFormAndTableProps<T, C>) => {
+  type DataSchemaType = z.infer<T>;
   type CompanySchemaType = z.infer<C>;
-  type genericSchemaType = z.infer<U>;
 
-  // Estados
   const [companyData, setCompanyData] = useState<Partial<CompanySchemaType>>({});
-  const [formData, setFormData] = useState<Partial<genericSchemaType>>({});
+  const [formData, setFormData] = useState<Partial<DataSchemaType>>({});
   const [formErrors, setFormErrors] = useState<Record<string, string | undefined>>({});
-  const [tableData, setTableData] = useState<(genericSchemaType & CompanySchemaType)[]>([]);
+  const [tableData, setTableData] = useState<(DataSchemaType & CompanySchemaType)[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [successMessages, setSuccessMessages] = useState<string[]>([]);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
-  // Funções de manipulação de input
+
   const handleCompanyInputChange = (field: keyof CompanySchemaType, value: string) => {
     setCompanyData(prev => ({ ...prev, [field]: value }));
     if (formErrors[field as string]) {
@@ -41,7 +38,8 @@ export const useFormAndTable = <C extends AnyZodObject, U extends AnyZodObject>(
     }
   };
 
-  const handleUserInputChange = (field: keyof genericSchemaType, value: string) => {
+  // Renomeado para maior clareza
+  const handleDataInputChange = (field: keyof DataSchemaType, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (formErrors[field as string]) {
       setFormErrors(prev => ({ ...prev, [field as string]: undefined }));
@@ -54,25 +52,31 @@ export const useFormAndTable = <C extends AnyZodObject, U extends AnyZodObject>(
     const companyKeys = Object.keys(companySchema.shape);
     const newErrors: Record<string, string | undefined> = {};
     companyKeys.forEach(key => {
-      if (formErrors[key]) newErrors[key] = formErrors[key];
+      if (formErrors[key]) {
+        newErrors[key] = formErrors[key];
+      }
     });
     setFormErrors(newErrors);
   };
 
-  // Funções de ação do formulário
   const handleRegisterOrUpdateClick = () => {
     const companyResult = companySchema.safeParse(companyData);
-    const userResult = genericSchema.safeParse(formData);
+    const dataResult = dataSchema.safeParse(formData); // Alterado de userResult para dataResult
 
-    if (!companyResult.success || !userResult.success) {
+    if (!companyResult.success || !dataResult.success) {
       const newErrors: Record<string, string | undefined> = {};
-      if (!companyResult.success) companyResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
-      if (!userResult.success) userResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+      if (!companyResult.success) {
+        companyResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+      }
+      if (!dataResult.success) {
+        dataResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+      }
       setFormErrors(newErrors);
       return;
     }
 
-    const newEntry = { ...companyResult.data, ...userResult.data };
+    const newEntry = { ...companyResult.data, ...dataResult.data };
+
     if (editingIndex !== null) {
       const updatedData = [...tableData];
       updatedData[editingIndex] = newEntry;
@@ -95,14 +99,13 @@ export const useFormAndTable = <C extends AnyZodObject, U extends AnyZodObject>(
     setTableData(prevData => prevData.filter((_, index) => index !== indexToRemove));
   };
 
-  // Funções de manipulação de arquivo
   const handleDataLoadedFromFile = (data: any[]) => {
     const contractResult = companySchema.safeParse(companyData);
     if (!contractResult.success) {
       const newErrors: Record<string, string | undefined> = {};
       contractResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
       setFormErrors(newErrors);
-      alert(`Por favor, preencha os dados da empresa antes de fazer o upload do arquivo.`);
+      alert("Por favor, preencha o N° do contrato antes de fazer o upload do arquivo.");
       return;
     }
     const validCompanyData = contractResult.data;
@@ -110,30 +113,39 @@ export const useFormAndTable = <C extends AnyZodObject, U extends AnyZodObject>(
     setSuccessMessages([]);
     setErrorMessages([]);
     const newErrorMessages: string[] = [];
-    const validRows: (genericSchemaType & CompanySchemaType)[] = [];
+    const validRows: (DataSchemaType & CompanySchemaType)[] = [];
 
     data.forEach((row, index) => {
-      const rowData: Partial<genericSchemaType> = {};
+      const rowData: Partial<DataSchemaType> = {};
       for (const key in headerMapping) {
-        rowData[key as keyof genericSchemaType] = row[headerMapping[key as keyof genericSchemaType]];
+        rowData[key as keyof DataSchemaType] = row[headerMapping[key as keyof DataSchemaType]];
       }
-      const userResult = genericSchema.safeParse(rowData);
-      if (userResult.success) {
-        validRows.push({ ...validCompanyData, ...userResult.data });
+
+      const dataResult = dataSchema.safeParse(rowData);
+      if (dataResult.success) {
+        validRows.push({ ...validCompanyData, ...dataResult.data });
       } else {
-        const errorDetails = userResult.error.issues.map(issue => issue.message).join('; ');
+        const errorDetails = dataResult.error.issues.map(issue => {
+          const fieldName = issue.path[0] as keyof typeof headerMapping;
+          const friendlyFieldName = headerMapping[fieldName] || fieldName;
+          return `Campo "${friendlyFieldName as string}": ${issue.message}`;
+        }).join('; ');
         newErrorMessages.push(`Linha ${index + 2}: ${errorDetails}`);
       }
     });
 
-    if (validRows.length > 0) setTableData(prevData => [...prevData, ...validRows]);
-    if (newErrorMessages.length > 0) setErrorMessages(newErrorMessages);
-    setSuccessMessages(validRows.length > 0 ? [`Total de ${validRows.length} registros válidos foram importados.`] : []);
+    if (validRows.length > 0) {
+      setTableData(prevData => [...prevData, ...validRows]);
+      setSuccessMessages([`Total de ${validRows.length} registros válidos foram importados.`]);
+    }
+    if (newErrorMessages.length > 0) {
+      setErrorMessages(newErrorMessages);
+    }
   };
 
   const handleDownloadSample = () => {
     const sample = sampleDataGenerator(companyData);
-    downloadSampleCSV(sample, `exemplo_${downloadFileNamePrefix}`);
+    downloadSampleCSV(sample, `exemplo_${downloadFileName}`);
   };
 
   const handleDownload = () => {
@@ -142,7 +154,7 @@ export const useFormAndTable = <C extends AnyZodObject, U extends AnyZodObject>(
       const newErrors: Record<string, string | undefined> = {};
       contractResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
       setFormErrors(newErrors);
-      alert(`Por favor, preencha os dados da empresa antes de baixar.`);
+      alert("Por favor, preencha os dados da empresa antes de baixar.");
       return;
     }
     if (tableData.length === 0) {
@@ -150,31 +162,32 @@ export const useFormAndTable = <C extends AnyZodObject, U extends AnyZodObject>(
       return;
     }
 
-    const contractValue = contractResult.data[contractFieldName];
-    const filename = `${contractValue}_${downloadFileNamePrefix}`;
+    const filename = `${contractResult.data.numeroContrato}_${downloadFileName}`;
     const dataToDownload = tableData.map(item => {
       const row: Record<string, any> = {};
       const companyShape = (companySchema as z.ZodObject<any>).shape;
-      const userShape = (genericSchema as z.ZodObject<any>).shape;
-      Object.keys(companyShape).forEach(key => {
-        const header = key.charAt(0).toUpperCase() + key.slice(1); // Simples capitalização
-        row[header] = item[key as keyof typeof item];
-      });
-      Object.keys(userShape).forEach(key => {
-        row[headerMapping[key as keyof genericSchemaType]] = item[key as keyof typeof item];
-      });
+      const dataShape = (dataSchema as z.ZodObject<any>).shape;
+      Object.keys(companyShape).forEach(key => row[key] = item[key as keyof typeof item]);
+      Object.keys(dataShape).forEach(key => row[headerMapping[key as keyof DataSchemaType]] = item[key as keyof typeof item]);
       return row;
     });
     downloadAsCSV(dataToDownload, filename);
   };
 
-  // Retorna todos os estados e funções que a página precisará
   return {
     states: { companyData, formData, formErrors, tableData, editingIndex, successMessages, errorMessages },
     handlers: {
-      resetFormAndExitEditing, handleCompanyInputChange, handleUserInputChange, handleRegisterOrUpdateClick,
-      handleEditItem, handleRemoveItem, handleDataLoadedFromFile,
-      handleDownloadSample, handleDownload, setErrorMessages, setSuccessMessages,
+      resetFormAndExitEditing,
+      handleCompanyInputChange,
+      handleDataInputChange, // Nome da função atualizado
+      handleRegisterOrUpdateClick,
+      handleEditItem,
+      handleRemoveItem,
+      handleDataLoadedFromFile,
+      handleDownloadSample,
+      handleDownload,
+      setErrorMessages,
+      setSuccessMessages,
     },
   };
 };

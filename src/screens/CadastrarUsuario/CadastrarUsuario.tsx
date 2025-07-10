@@ -45,12 +45,11 @@ const pageConfigs = {
 
 export const CadastrarUsuario = (): JSX.Element => {
   const { states, handlers } = useFormAndTable({
-    genericSchema: userSchema,
+    dataSchema: userSchema,
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileNamePrefix: pageConfigs.downloadFileNamePrefix,
-    contractFieldName: 'numeroContrato' // Informa ao hook qual campo usar para o nome do arquivo
+    downloadFileName: pageConfigs.downloadFileNamePrefix,
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -92,7 +91,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                       <InputMask
                         mask="999.999.999-99"
                         value={states.formData.cpf || ""}
-                        onChange={e => handlers.handleUserInputChange('cpf', e.target.value)}
+                        onChange={e => handlers.handleDataInputChange('cpf', e.target.value)}
                       >
                         {(inputProps) => (
                           <Input
@@ -107,7 +106,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>Nome Completo:</RequiredLabel>
-                      <Input value={states.formData.nome || ""} onChange={e => handlers.handleUserInputChange('nome', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="João da Silva Santos" />
+                      <Input value={states.formData.nome || ""} onChange={e => handlers.handleDataInputChange('nome', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="João da Silva Santos" />
                       {states.formErrors.nome && <p className="text-red-500 text-xs mt-1">{states.formErrors.nome === "Required" ? "Campo Obrigatório" : states.formErrors.nome}</p>}
                     </div>
                   </div>
@@ -117,7 +116,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                       <InputMask
                         mask="(99) 99999-9999"
                         value={states.formData.telefone || ""}
-                        onChange={e => handlers.handleUserInputChange('telefone', e.target.value)}
+                        onChange={e => handlers.handleDataInputChange('telefone', e.target.value)}
                       >
                         {(inputProps) => (
                           <Input
@@ -132,7 +131,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>E-mail do Beneficiário:</RequiredLabel>
-                      <Input value={states.formData.email || ""} onChange={e => handlers.handleUserInputChange('email', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="exemplo@email.com" />
+                      <Input value={states.formData.email || ""} onChange={e => handlers.handleDataInputChange('email', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="exemplo@email.com" />
                       {states.formErrors.email && <p className="text-red-500 text-xs mt-1">{states.formErrors.email === "Required" ? "Campo Obrigatório" : states.formErrors.email}</p>}
                     </div>
                   </div>
@@ -142,7 +141,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                       <InputMask
                         mask="99/99/9999"
                         value={states.formData.nascimento || ""}
-                        onChange={e => handlers.handleUserInputChange('nascimento', e.target.value)}
+                        onChange={e => handlers.handleDataInputChange('nascimento', e.target.value)}
                       >
                         {(inputProps) => (
                           <Input
@@ -157,7 +156,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     </div>
                     <div className="col-span-2">
                       <RequiredLabel>Nome da mãe:</RequiredLabel>
-                      <Input value={states.formData.nomeMae || ""} onChange={e => handlers.handleUserInputChange('nomeMae', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Maria da Silva Santos" />
+                      <Input value={states.formData.nomeMae || ""} onChange={e => handlers.handleDataInputChange('nomeMae', e.target.value)} className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm" placeholder="Maria da Silva Santos" />
                       {states.formErrors.nomeMae && <p className="text-red-500 text-xs mt-1">{states.formErrors.nomeMae === "Required" ? "Campo Obrigatório" : states.formErrors.nomeMae}</p>}
                     </div>
                   </div>
