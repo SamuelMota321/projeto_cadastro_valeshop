@@ -1,4 +1,4 @@
-import logoValeshop from '../../imgs/logo_valeshop.png';
+import logoValeshop from '../../imgs/logo_valeShop.png';
 
 export const Header = (): JSX.Element => {
   return (
