@@ -99,20 +99,13 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                   <div className="grid grid-cols-5 gap-4 mb-8">
                     <div>
                       <RequiredLabel>N° do Banco:</RequiredLabel>
-                      <InputMask
-                        mask="999"
+                      <Input
                         value={states.formData.banco || ""}
                         onChange={e => handlers.handleDataInputChange('banco', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="000"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="000"
+                        maxLength={3}
+                      />
                       {states.formErrors.banco && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.banco === "Required" ? "Campo Obrigatório" : states.formErrors.banco}
@@ -121,20 +114,13 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                     </div>
                     <div>
                       <RequiredLabel>N° da Agência:</RequiredLabel>
-                      <InputMask
-                        mask="9999"
+                      <Input
                         value={states.formData.agencia || ""}
                         onChange={e => handlers.handleDataInputChange('agencia', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="0000"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="0000"
+                        maxLength={4}
+                      />
                       {states.formErrors.agencia && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.agencia === "Required" ? "Campo Obrigatório" : states.formErrors.agencia}
@@ -143,20 +129,13 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                     </div>
                     <div>
                       <RequiredLabel>Dígito da Agência:</RequiredLabel>
-                      <InputMask
-                        mask="9"
+                      <Input
                         value={states.formData.digitoAgencia || ""}
                         onChange={e => handlers.handleDataInputChange('digitoAgencia', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="0"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="0"
+                        maxLength={1}
+                      />
                       {states.formErrors.digitoAgencia && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.digitoAgencia === "Required" ? "Campo Obrigatório" : states.formErrors.digitoAgencia}
@@ -165,20 +144,13 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                     </div>
                     <div>
                       <RequiredLabel>N° da Conta:</RequiredLabel>
-                      <InputMask
-                        mask="999999999"
+                      <Input
                         value={states.formData.conta || ""}
                         onChange={e => handlers.handleDataInputChange('conta', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="000000000"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="000000000"
+                        maxLength={9}
+                      />
                       {states.formErrors.conta && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.conta === "Required" ? "Campo Obrigatório" : states.formErrors.conta}
@@ -187,20 +159,13 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                     </div>
                     <div>
                       <RequiredLabel>Dígito da Conta:</RequiredLabel>
-                      <InputMask
-                        mask="9"
+                      <Input
                         value={states.formData.digitoConta || ""}
                         onChange={e => handlers.handleDataInputChange('digitoConta', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="0"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="0"
+                        maxLength={1}
+                      />
                       {states.formErrors.digitoConta && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.digitoConta === "Required" ? "Campo Obrigatório" : states.formErrors.digitoConta}

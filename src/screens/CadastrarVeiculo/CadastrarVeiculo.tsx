@@ -98,20 +98,13 @@ export const CadastrarVeiculo = (): JSX.Element => {
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
                       <RequiredLabel>Renavam:</RequiredLabel>
-                      <InputMask
-                        mask="99999999999"
+                      <Input
                         value={states.formData.renavam || ""}
                         onChange={e => handlers.handleDataInputChange('renavam', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="12345678901"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="12345678901"
+                        maxLength={11}
+                      />
                       {states.formErrors.renavam && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.renavam === "Required" ? "Campo Obrigatório" : states.formErrors.renavam}
@@ -152,20 +145,13 @@ export const CadastrarVeiculo = (): JSX.Element => {
                   <div className="grid grid-cols-2 gap-4 mb-8">
                     <div>
                       <RequiredLabel>Ano de Fabricação:</RequiredLabel>
-                      <InputMask
-                        mask="9999"
+                      <Input
                         value={states.formData.anoFabricacao || ""}
                         onChange={e => handlers.handleDataInputChange('anoFabricacao', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="2020"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="2020"
+                        maxLength={4}
+                      />
                       {states.formErrors.anoFabricacao && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.anoFabricacao === "Required" ? "Campo Obrigatório" : states.formErrors.anoFabricacao}
@@ -174,20 +160,13 @@ export const CadastrarVeiculo = (): JSX.Element => {
                     </div>
                     <div>
                       <RequiredLabel>ID do Modelo do Veículo:</RequiredLabel>
-                      <InputMask
-                        mask="999"
+                      <Input
                         value={states.formData.modeloId || ""}
                         onChange={e => handlers.handleDataInputChange('modeloId', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="123"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="123"
+                        maxLength={3}
+                      />
                       {states.formErrors.modeloId && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.modeloId === "Required" ? "Campo Obrigatório" : states.formErrors.modeloId}

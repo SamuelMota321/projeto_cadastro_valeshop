@@ -25,10 +25,10 @@ export const Nav = (): JSX.Element => {
     { text: "Novo Cadastro de referência", link: "/novo-cadastro-referencia" },
     { text: "Cadastro Motorista", link: "/cadastrar-motorista" },
     { text: "Cadastro Veículo", link: "/cadastrar-veiculo" },
-    { text: "Crédito de valores para cartão", link: "#" },
-    { text: "Crédito em cartão e cadastro de usuário", link: "#" },
-    { text: "Estorno de débito", link: "#" },
-    { text: "Novo usuário e novo crédito", link: "#" },
+    { text: "Crédito de valores para cartão", link: "/credito-cartao" },
+    { text: "Crédito em cartão e cadastro de usuário", link: "/credito-cartao-cadastro-usuario" },
+    { text: "Estorno de débito", link: "/estorno-debito" },
+    { text: "Novo usuário e novo crédito", link: "/novo-usuario-novo-credito" },
   ];
 
   const isSubmenuActive = (submenu: any[] | undefined) => {

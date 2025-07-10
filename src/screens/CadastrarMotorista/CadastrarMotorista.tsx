@@ -110,20 +110,13 @@ export const CadastrarMotorista = (): JSX.Element => {
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
                       <RequiredLabel>Matrícula:</RequiredLabel>
-                      <InputMask
-                        mask="99999999999"
+                      <Input
                         value={states.formData.matricula || ""}
                         onChange={e => handlers.handleDataInputChange('matricula', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="12345678900"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="00987654321"
+                        maxLength={11}
+                      />
                       {states.formErrors.matricula && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.matricula === "Required" ? "Campo Obrigatório" : states.formErrors.matricula}
@@ -192,20 +185,13 @@ export const CadastrarMotorista = (): JSX.Element => {
                     </div>
                     <div>
                       <RequiredLabel>Número CNH:</RequiredLabel>
-                      <InputMask
-                        mask="99999999999"
+                      <Input
                         value={states.formData.numeroCnh || ""}
                         onChange={e => handlers.handleDataInputChange('numeroCnh', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="12345678900"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        placeholder="00987654321"
+                        maxLength={11}
+                      />
                       {states.formErrors.numeroCnh && (
                         <p className="text-red-500 text-xs mt-1">
                           {states.formErrors.numeroCnh === "Required" ? "Campo Obrigatório" : states.formErrors.numeroCnh}

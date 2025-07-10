@@ -87,7 +87,8 @@ export const AlterarMatricula = (): JSX.Element => {
                         value={states.formData.matriculaAntiga || ""}
                         onChange={e => handlers.handleDataInputChange('matriculaAntiga', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="Exemplo: 12345678900"
+                        placeholder="12345678900"
+                        maxLength={11}
                       />
                       {states.formErrors.matriculaAntiga && <p className="text-red-500 text-xs mt-1">{states.formErrors.matriculaAntiga === "Required" ? "Campo Obrigatório" : states.formErrors.matriculaAntiga}</p>}
                     </div>
@@ -97,7 +98,8 @@ export const AlterarMatricula = (): JSX.Element => {
                         value={states.formData.matriculaNova || ""}
                         onChange={e => handlers.handleDataInputChange('matriculaNova', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="Exemplo: 00987654321"
+                        placeholder="00987654321"
+                        maxLength={11}
                       />
                       {states.formErrors.matriculaNova && <p className="text-red-500 text-xs mt-1">{states.formErrors.matriculaNova === "Required" ? "Campo Obrigatório" : states.formErrors.matriculaNova}</p>}
                     </div>

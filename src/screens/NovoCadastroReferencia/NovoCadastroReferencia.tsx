@@ -15,22 +15,19 @@ import { newReferenceSchema } from "../../lib/schemas/newReferenceSchema";
 
 const pageConfigs = {
   headerMapping: {
-    cpf: "CPF",
     departamento: "Nome do Departamento"
   },
   sampleDataGenerator: () => [
     ["", "PLANILHA PARA CADASTRO DE REFERÊNCIA"],
     [],
-    ["CPF", "Nome do Departamento"],
-    ["OBRIGATÓRIO", "OBRIGATÓRIO"],
+    ["Nome do Departamento"],
+    ["OBRIGATÓRIO"],
     [
-      "CPF do funcionário (11 dígitos)\nExemplo: 12345678900",
       "Nome do departamento\nExemplo: Recursos Humanos"
     ]
   ],
   downloadFileNamePrefix: "Novo_Cadastro_Referencia",
   instructions: [
-    { field: "CPF", rule: "Deve conter 11 dígitos.", example: "Exemplo: 12345678900" },
     { field: "Nome do Departamento", rule: "Somente letras e espaços.", example: "Exemplo: Recursos Humanos" }
   ]
 };
@@ -45,7 +42,7 @@ export const NovoCadastroReferencia = (): JSX.Element => {
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
-  
+
   const cardStatusInstructionKeywords = [
     "OBRIGATÓRIO", "Exemplo:", "CPF do funcionário"
   ];
@@ -87,43 +84,19 @@ export const NovoCadastroReferencia = (): JSX.Element => {
                       )}
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div>
-                      <RequiredLabel>CPF:</RequiredLabel>
-                      <InputMask
-                        mask="999.999.999-99"
-                        value={states.formData.cpf || ""}
-                        onChange={e => handlers.handleDataInputChange('cpf', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="000.000.000-00"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
-                      {states.formErrors.cpf && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.cpf === "Required" ? "Campo Obrigatório" : states.formErrors.cpf}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <RequiredLabel>Nome do Departamento:</RequiredLabel>
-                      <Input
-                        value={states.formData.departamento || ""}
-                        onChange={e => handlers.handleDataInputChange('departamento', e.target.value)}
-                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="Recursos Humanos"
-                      />
-                      {states.formErrors.departamento && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.departamento === "Required" ? "Campo Obrigatório" : states.formErrors.departamento}
-                        </p>
-                      )}
-                    </div>
+                  <div className="grid grid-cols-1 gap-4 mb-8">
+                    <RequiredLabel>Nome do Departamento:</RequiredLabel>
+                    <Input
+                      value={states.formData.departamento || ""}
+                      onChange={e => handlers.handleDataInputChange('departamento', e.target.value)}
+                      className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                      placeholder="Recursos Humanos"
+                    />
+                    {states.formErrors.departamento && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {states.formErrors.departamento === "Required" ? "Campo Obrigatório" : states.formErrors.departamento}
+                      </p>
+                    )}
                   </div>
                   <div className="flex justify-end space-x-4 mb-6">
                     {states.editingIndex !== null && (
@@ -148,9 +121,9 @@ export const NovoCadastroReferencia = (): JSX.Element => {
                     onDownloadSample={handlers.handleDownloadSample}
                   />
                   <TemporaryDataTable
-                    headers={["CPF", "Nome do Departamento"]}
+                    headers={["Nome do Departamento"]}
                     data={states.tableData}
-                    dataKeys={["cpf", "departamento"]}
+                    dataKeys={["departamento"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
                     onDownloadClick={handlers.handleDownload}
