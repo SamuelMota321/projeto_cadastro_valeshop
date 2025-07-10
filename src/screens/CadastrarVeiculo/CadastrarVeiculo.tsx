@@ -11,42 +11,42 @@ import { SpreadsheetInstructions } from "../../components/ui/spreadsheetInstruct
 import { companySchema } from "../../lib/schemas/companySchema";
 import InputMask from "react-input-mask";
 import { useFormAndTable } from "../../hooks/useFormAndTable";
-import { bankDataSchema } from "../../lib/schemas/bankDataSchema";
+import { vehicleSchema } from "../../lib/schemas/vehicleSchema";
 
 const pageConfigs = {
   headerMapping: {
-    banco: "N° do Banco",
-    agencia: "N° da Agência",
-    digitoAgencia: "Dígito da Agência",
-    conta: "N° da Conta",
-    digitoConta: "Dígito da Conta"
+    renavam: "Renavam",
+    placa: "Placa",
+    chassi: "Chassi",
+    anoFabricacao: "Ano de Fabricação",
+    modeloId: "ID do Modelo do Veículo"
   },
   sampleDataGenerator: () => [
-    ["", "PLANILHA PARA CADASTRO/ALTERAÇÃO DE DADOS BANCÁRIOS"],
+    ["", "PLANILHA PARA CADASTRO DE VEÍCULO"],
     [],
-    ["N° do Banco", "N° da Agência", "Dígito da Agência", "N° da Conta", "Dígito da Conta"],
+    ["Renavam", "Placa", "Chassi", "Ano de Fabricação", "ID do Modelo do Veículo"],
     ["OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO"],
     [
-      "Código do banco (3 dígitos)\nExemplo: 001",
-      "Número da agência (4 dígitos)\nExemplo: 1234",
-      "Dígito da agência (1 dígito)\nExemplo: 5",
-      "Número da conta (9 dígitos)\nExemplo: 123456789",
-      "Dígito da conta (1 dígito)\nExemplo: 0"
+      "Renavam do veículo (11 dígitos)\nExemplo: 12345678901",
+      "Placa do veículo\nExemplo: ABC-1234 ou AB1C234",
+      "Chassi do veículo (17 caracteres) Deve seguir o seguinte formato: 1 Número, 9 Letras ou números e 6 Números.\nExemplo: 9BWZZZ377VT004251",
+      "Ano de fabricação (4 dígitos)\nExemplo: 2020",
+      "ID do modelo do veículo (3 dígitos)\nExemplo: 123"
     ]
   ],
-  downloadFileNamePrefix: "Cadastrar_Alterar_Dados_Bancarios",
+  downloadFileNamePrefix: "Cadastrar_Veiculo",
   instructions: [
-    { field: "N° do Banco", rule: "Deve conter 3 dígitos.", example: "Exemplo: 001" },
-    { field: "N° da Agência", rule: "Deve conter 4 dígitos.", example: "Exemplo: 1234" },
-    { field: "Dígito da Agência", rule: "Deve conter 1 dígito.", example: "Exemplo: 5" },
-    { field: "N° da Conta", rule: "Deve conter 9 dígitos.", example: "Exemplo: 123456789" },
-    { field: "Dígito da Conta", rule: "Deve conter 1 dígito.", example: "Exemplo: 0" }
+    { field: "Renavam", rule: "Deve conter 11 dígitos.", example: "Exemplo: 12345678901" },
+    { field: "Placa", rule: "Formato LLL-NNNN ou LLLNLNN.", example: "Exemplo: ABC-1234 ou AB1C234" },
+    { field: "Chassi", rule: "Deve seguir o seguinte formato: 1 Número, 9 Letras ou números e 6 Números.", example: "Exemplo: 9BWZZZ377VT004251" },
+    { field: "Ano de Fabricação", rule: "Deve conter 4 dígitos.", example: "Exemplo: 2020" },
+    { field: "ID do Modelo do Veículo", rule: "Deve conter 3 dígitos.", example: "Exemplo: 123" }
   ]
 };
 
-export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
+export const CadastrarVeiculo = (): JSX.Element => {
   const { states, handlers } = useFormAndTable({
-    dataSchema: bankDataSchema,
+    dataSchema: vehicleSchema,
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
@@ -54,9 +54,8 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
-
   const cardStatusInstructionKeywords = [
-    "OBRIGATÓRIO", "Exemplo:", "Código do banco", "Número da agência", "Número da conta"
+    "OBRIGATÓRIO", "Exemplo:", "Renavam do veículo", "Placa do veículo", "Chassi do veículo",
   ];
 
   return (
@@ -70,7 +69,7 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                 <Nav />
                 <form onSubmit={(e) => e.preventDefault()} className="flex-1 px-8 py-6 min-w-0">
                   <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
-                    Cadastrar/Alterar Dados Bancários
+                    Cadastro de Veículo
                   </h1>
                   <div className="grid grid-cols-1 gap-4 mb-4">
                     <div>
@@ -96,114 +95,102 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                       )}
                     </div>
                   </div>
-                  <div className="grid grid-cols-5 gap-4 mb-8">
+                  <div className="grid grid-cols-3 gap-4 mb-8">
                     <div>
-                      <RequiredLabel>N° do Banco:</RequiredLabel>
+                      <RequiredLabel>Renavam:</RequiredLabel>
                       <InputMask
-                        mask="999"
-                        value={states.formData.banco || ""}
-                        onChange={e => handlers.handleDataInputChange('banco', e.target.value)}
+                        mask="99999999999"
+                        value={states.formData.renavam || ""}
+                        onChange={e => handlers.handleDataInputChange('renavam', e.target.value)}
                       >
                         {(inputProps) => (
                           <Input
                             {...inputProps}
                             type="text"
-                            placeholder="000"
+                            placeholder="12345678901"
                             className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                           />
                         )}
                       </InputMask>
-                      {states.formErrors.banco && (
+                      {states.formErrors.renavam && (
                         <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.banco === "Required" ? "Campo Obrigatório" : states.formErrors.banco}
+                          {states.formErrors.renavam === "Required" ? "Campo Obrigatório" : states.formErrors.renavam}
                         </p>
                       )}
                     </div>
                     <div>
-                      <RequiredLabel>N° da Agência:</RequiredLabel>
+                      <RequiredLabel>Placa:</RequiredLabel>
+                      <Input
+                        value={states.formData.placa || ""}
+                        onChange={e => handlers.handleDataInputChange('placa', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm uppercase"
+                        placeholder="ABC-1234 ou AB1C234"
+                        maxLength={7}
+                      />
+                      {states.formErrors.placa && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {states.formErrors.placa === "Required" ? "Campo Obrigatório" : states.formErrors.placa}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <RequiredLabel>Chassi:</RequiredLabel>
+                      <Input
+                        value={states.formData.chassi || ""}
+                        onChange={e => handlers.handleDataInputChange('chassi', e.target.value)}
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm uppercase"
+                        placeholder="9BWZZZ377VT004251"
+                        maxLength={17}
+                      />
+                      {states.formErrors.chassi && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {states.formErrors.chassi === "Required" ? "Campo Obrigatório" : states.formErrors.chassi}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div>
+                      <RequiredLabel>Ano de Fabricação:</RequiredLabel>
                       <InputMask
                         mask="9999"
-                        value={states.formData.agencia || ""}
-                        onChange={e => handlers.handleDataInputChange('agencia', e.target.value)}
+                        value={states.formData.anoFabricacao || ""}
+                        onChange={e => handlers.handleDataInputChange('anoFabricacao', e.target.value)}
                       >
                         {(inputProps) => (
                           <Input
                             {...inputProps}
                             type="text"
-                            placeholder="0000"
+                            placeholder="2020"
                             className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                           />
                         )}
                       </InputMask>
-                      {states.formErrors.agencia && (
+                      {states.formErrors.anoFabricacao && (
                         <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.agencia === "Required" ? "Campo Obrigatório" : states.formErrors.agencia}
+                          {states.formErrors.anoFabricacao === "Required" ? "Campo Obrigatório" : states.formErrors.anoFabricacao}
                         </p>
                       )}
                     </div>
                     <div>
-                      <RequiredLabel>Dígito da Agência:</RequiredLabel>
+                      <RequiredLabel>ID do Modelo do Veículo:</RequiredLabel>
                       <InputMask
-                        mask="9"
-                        value={states.formData.digitoAgencia || ""}
-                        onChange={e => handlers.handleDataInputChange('digitoAgencia', e.target.value)}
+                        mask="999"
+                        value={states.formData.modeloId || ""}
+                        onChange={e => handlers.handleDataInputChange('modeloId', e.target.value)}
                       >
                         {(inputProps) => (
                           <Input
                             {...inputProps}
                             type="text"
-                            placeholder="0"
+                            placeholder="123"
                             className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                           />
                         )}
                       </InputMask>
-                      {states.formErrors.digitoAgencia && (
+                      {states.formErrors.modeloId && (
                         <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.digitoAgencia === "Required" ? "Campo Obrigatório" : states.formErrors.digitoAgencia}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <RequiredLabel>N° da Conta:</RequiredLabel>
-                      <InputMask
-                        mask="999999999"
-                        value={states.formData.conta || ""}
-                        onChange={e => handlers.handleDataInputChange('conta', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="000000000"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
-                      {states.formErrors.conta && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.conta === "Required" ? "Campo Obrigatório" : states.formErrors.conta}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <RequiredLabel>Dígito da Conta:</RequiredLabel>
-                      <InputMask
-                        mask="9"
-                        value={states.formData.digitoConta || ""}
-                        onChange={e => handlers.handleDataInputChange('digitoConta', e.target.value)}
-                      >
-                        {(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            type="text"
-                            placeholder="0"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                          />
-                        )}
-                      </InputMask>
-                      {states.formErrors.digitoConta && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.digitoConta === "Required" ? "Campo Obrigatório" : states.formErrors.digitoConta}
+                          {states.formErrors.modeloId === "Required" ? "Campo Obrigatório" : states.formErrors.modeloId}
                         </p>
                       )}
                     </div>
@@ -231,9 +218,15 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                     onDownloadSample={handlers.handleDownloadSample}
                   />
                   <TemporaryDataTable
-                    headers={["N° do Banco", "N° da Agência", "Dígito da Agência", "N° da Conta", "Dígito da Conta"]}
+                    headers={[
+                      "Renavam",
+                      "Placa",
+                      "Chassi",
+                      "Ano de Fabricação",
+                      "ID do Modelo do Veículo"
+                    ]}
                     data={states.tableData}
-                    dataKeys={["banco", "agencia", "digitoAgencia", "conta", "digitoConta"]}
+                    dataKeys={["renavam", "placa", "chassi", "anoFabricacao", "modeloId"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
                     onDownloadClick={handlers.handleDownload}

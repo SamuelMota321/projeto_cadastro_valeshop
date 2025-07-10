@@ -68,7 +68,7 @@ export const CadastrarUsuario = (): JSX.Element => {
             <CardContent className="p-0">
               <div className="flex">
                 <Nav />
-                <div className="flex-1 px-8 py-6 min-w-0">
+                <form onSubmit={(e) => e.preventDefault()} className="flex-1 px-8 py-6 min-w-0">
                   <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">Cadastrar Usuário</h1>
                   <div className="grid grid-cols-1 gap-4 mb-4">
                     <div>
@@ -169,7 +169,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     {states.editingIndex !== null && (
                       <Button onClick={handlers.resetFormAndExitEditing} variant="outline" className="px-8 py-2 rounded-full font-normal text-sm">Cancelar</Button>
                     )}
-                    <Button onClick={handlers.handleRegisterOrUpdateClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm">
+                    <Button type="submit" onClick={handlers.handleRegisterOrUpdateClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm">
                       {states.editingIndex !== null ? "Salvar Alterações" : "Registrar"}
                     </Button>
                   </div>
@@ -197,7 +197,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     onEditItem={handlers.handleEditItem}
                     onDownloadClick={handlers.handleDownload}
                   />
-                </div>
+                </form>
               </div>
             </CardContent>
           </Card>

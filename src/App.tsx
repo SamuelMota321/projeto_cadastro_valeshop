@@ -6,6 +6,7 @@ import { AlterarMatricula } from "./screens/AlterarMatricula";
 import { CadastrarAlterarDadosBancarios } from "./screens/CadastrarAlterarDadosBancarios";
 import { NovoCadastroReferencia } from "./screens/NovoCadastroReferencia";
 import { CadastrarMotorista } from "./screens/CadastrarMotorista";
+import { CadastrarVeiculo } from "./screens/CadastrarVeiculo";
 
 
 const router = createBrowserRouter([
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: "/cadastrar-motorista",
     element: <CadastrarMotorista />,
+  },
+  {
+    path: "/cadastrar-veiculo",
+    element: <CadastrarVeiculo />,
   },
 ]);
 

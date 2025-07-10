@@ -1,0 +1,1 @@
+export { CadastrarVeiculo } from "./CadastrarVeiculo";

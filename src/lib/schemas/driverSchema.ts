@@ -1,5 +1,7 @@
 import z from "zod";
-import { capitalizeName, cnhRegex, dateRegex, nameRegex, onlyNumbers } from "./basicFunctions";
+import { capitalizeName, dateRegex, nameRegex, onlyNumbers } from "./basicFunctions";
+
+const cnhRegex = /^(ACC|A|B|C|D|E)$/i;
 
 export const driverSchema = z.object({
   matricula: z.string()

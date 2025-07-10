@@ -1,5 +1,7 @@
 import z from "zod";
-import { capitalizeName, movimentacaoRegex, nameRegex, onlyNumbers } from "./basicFunctions";
+import { capitalizeName, nameRegex, onlyNumbers } from "./basicFunctions";
+
+const movimentacaoRegex = /^(Ativar|Cancelar|Inativar|Bloquear)$/i;
 
 export const alterCardStatusSchema = z.object({
   cpf: z.string()
