@@ -1,1 +1,1 @@
-// export { CadastrarAlterarDadosBancarios } from "./CadastrarAlterarDadosBancarios";
+export { CadastrarAlterarDadosBancarios } from "./CadastrarAlterarDadosBancarios";

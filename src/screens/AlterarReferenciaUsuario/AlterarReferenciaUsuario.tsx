@@ -25,13 +25,13 @@ const pageConfigs = {
     ["OBRIGATÓRIO", "OBRIGATÓRIO"],
     [
       "CPF do beneficiário\n(11 dígitos)\nExemplo: 12345678900",
-      "Nome do departamento\nExemplo: RH"
+      "Nome do departamento\nExemplo: Recursos Humanos"
     ]
   ],
   downloadFileNamePrefix: "Alterar_Referencia_Usuario",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
-    { field: "Nome do Departamento", rule: "Informe o nome completo do departamento.", example: "Exemplo: RH" }
+    { field: "Nome do Departamento", rule: "Informe o nome completo do departamento.", example: "Exemplo: Recursos Humanos" }
   ]
 };
 
@@ -45,7 +45,7 @@ export const AlterarReferencia = (): JSX.Element => {
   });
 
   const cardStatusInstructionKeywords = [
-    "OBRIGATÓRIO", "Exemplo:", "CPF do benefíciário", "Nome do Departamento"
+    "OBRIGATÓRIO", "Exemplo:"
   ];
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -67,7 +67,7 @@ export const AlterarReferencia = (): JSX.Element => {
                     <div>
                       <RequiredLabel>N° do contrato:</RequiredLabel>
                       <InputMask
-                        mask="999.999.999999.99-99"
+                        mask="999.999.9999.99-99"
                         value={states.companyData.numeroContrato || ""}
                         onChange={e => handlers.handleCompanyInputChange('numeroContrato', e.target.value)}
                       >
@@ -75,7 +75,7 @@ export const AlterarReferencia = (): JSX.Element => {
                           <Input
                             {...inputProps}
                             type="text"
-                            placeholder="000.000.000000.00-00"
+                            placeholder="000.000.0000.00-00"
                             className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                           />
                         )}
@@ -161,7 +161,7 @@ export const AlterarReferencia = (): JSX.Element => {
                   <div className="mb-6">
                     <FileUpload
                       expectedHeaders={expectedHeadersForUpload}
-                      instructionalKeywords={cardStatusInstructionKeywords} 
+                      instructionalKeywords={cardStatusInstructionKeywords}
                       onDataLoaded={handlers.handleDataLoadedFromFile}
                       onError={(errorMessage) => handlers.setErrorMessages([errorMessage])}
                     />

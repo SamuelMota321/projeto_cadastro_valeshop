@@ -62,7 +62,7 @@ export const AlterarMatricula = (): JSX.Element => {
                   <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
                     Alteração Matrícula
                   </h1>
-                  <div>
+                  <div className="mb-6">
                     <RequiredLabel>N° do contrato:</RequiredLabel>
                     <InputMask
                       mask="999.999.9999.99-99"
