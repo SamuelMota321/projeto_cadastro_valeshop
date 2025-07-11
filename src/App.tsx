@@ -10,6 +10,7 @@ import { CadastrarVeiculo } from "./screens/CadastrarVeiculo";
 import { CreditoCartao } from "./screens/CreditoCartao";
 import { CadastroCartao } from "./screens/CadastroCartao";
 import { EstornoDebito } from "./screens/EstornoDebito";
+import { NovoCartaoNovoUsuario } from "./screens/NovoCartaoNovoUsuario";
 
 
 const router = createBrowserRouter([
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
   {
     path: "/estorno-debito",
     element: <EstornoDebito />,
+  },
+  {
+    path: "/novo-usuario-novo-credito",
+    element: <NovoCartaoNovoUsuario />,
   },
 ]);
 

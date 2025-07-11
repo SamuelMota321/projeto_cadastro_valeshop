@@ -58,9 +58,9 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     setFormErrors(newErrors);
   };
 
-  const handleRegisterOrUpdateClick = () => {
+  const handleRegisterOrUpdateClick = async () => {
     const companyResult = companySchema.safeParse(companyData);
-    const dataResult = dataSchema.safeParse(formData); 
+    const dataResult = dataSchema.safeParse(formData);
 
     if (!companyResult.success || !dataResult.success) {
       const newErrors: Record<string, string | undefined> = {};
@@ -81,6 +81,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
       updatedData[editingIndex] = newEntry;
       setTableData(updatedData);
     } else {
+
       setTableData(prevData => [...prevData, newEntry]);
     }
     resetFormAndExitEditing();
@@ -178,7 +179,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     handlers: {
       resetFormAndExitEditing,
       handleCompanyInputChange,
-      handleDataInputChange, 
+      handleDataInputChange,
       handleRegisterOrUpdateClick,
       handleEditItem,
       handleRemoveItem,

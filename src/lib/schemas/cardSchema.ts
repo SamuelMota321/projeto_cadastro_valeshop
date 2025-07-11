@@ -1,7 +1,6 @@
 import z from "zod";
-import { capitalizeName, nameRegex, onlyNumbers } from "./basicFunctions";
+import { capitalizeName, nameRegex, onlyNumbers, onlyNumbersCredit } from "./basicFunctions";
 
-const onlyNumbersCredit = (value: string) => value.replace(/[^\d.,]/g, '');
 export const cardSchema = z.object({
   cpf: z.string()
     .transform(onlyNumbers)
@@ -19,7 +18,7 @@ export const cardSchema = z.object({
   .refine(value => {
     const num = Number(value.replace(/,/g, '.'));
     return num > 0;
-  }, { message: "Valor de crédito deve ser positivo." })
+  }, { message: "Valor de crédito deve ser um número positivo." })
   .transform(value => {
     const num = Number(value.replace(/,/g, '.'));
     if (isNaN(num)) return "0,00";

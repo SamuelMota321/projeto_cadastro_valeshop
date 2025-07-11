@@ -11,40 +11,37 @@ import { SpreadsheetInstructions } from "../../components/ui/spreadsheetInstruct
 import { companySchema } from "../../lib/schemas/companySchema";
 import InputMask from "react-input-mask";
 import { useFormAndTable } from "../../hooks/useFormAndTable";
-import { cardSchema } from "../../lib/schemas/cardSchema";
+import { newCardNewUser } from "../../lib/schemas/newCardNewUser";
 
 
 const pageConfigs = {
   headerMapping: {
     cpf: "CPF",
-    nome: "Nome Completo",
-    valorCredito: "Valor de Crédito",
+    matricula: "Matrícula",
     departamento: "Departamento"
   },
   sampleDataGenerator: () => [
-    ["", "PLANILHA PARA CADASTRO DE CARTÃO"],
+    ["", "PLANILHA PARA ESTORNO DE DÉBITO PARA CARTÃO"],
     [],
-    ["CPF", "Nome Completo", "Valor de Crédito", "Departamento"],
-    ["OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO", "OPCIONAL"],
+    ["CPF", "Matrícula", "Departamento",],
+    ["OBRIGATÓRIO", "OBRIGATÓRIO", "OPCIONAL"],
     [
       "CPF do beneficiário (11 dígitos)\nExemplo: 12345678900",
-      "Nome completo do beneficiário\nExemplo: João da Silva",
-      "Valor de crédito (número)\nExemplo: 1000,00",
-      "Departamento do beneficiário\nExemplo: Recursos Humanos"
+      "Matrícula do beneficiário\nExemplo: 123456",
+      "Departamento do beneficiário\nExemplo: Vendas"
     ]
   ],
-  downloadFileNamePrefix: "Cadastro_Cartao",
+  downloadFileNamePrefix: "estorno_debito_cartao",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos.", example: "Exemplo: 12345678900" },
-    { field: "Nome Completo", rule: "Nome completo, sem abreviações.", example: "Exemplo: João da Silva" },
-    { field: "Valor de Crédito", rule: "Deve ser um número positivo e sem uso de 'R$'. As casas decimais podem ser separados com  '.' (PONTO) ou ',' (VÍRGULA).", example: "Exemplos: 1000 / 1000.00 / 1000,00" },
-    { field: "Departamento", rule: "Opcional. Somente letras e espaços.", example: "Exemplo: Recursos Humanos" }
+    { field: "Matrícula", rule: "Matrícula do beneficiário, sem abreviações.", example: "Exemplo: 123456" },
+    { field: "Departamento", rule: "Departamento do beneficiário, sem abreviações.", example: "Exemplo: Vendas" },
   ]
 };
 
-export const CadastroCartao = (): JSX.Element => {
+export const NovoCartaoNovoUsuario = (): JSX.Element => {
   const { states, handlers } = useFormAndTable({
-    dataSchema: cardSchema,
+    dataSchema: newCardNewUser,
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
@@ -53,7 +50,7 @@ export const CadastroCartao = (): JSX.Element => {
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
   const cardStatusInstructionKeywords = [
-    "OBRIGATÓRIO", "Exemplo:", "CPF do beneficiário", "Nome completo do beneficiário", "Departamento do beneficiário", "OPCIONAL"
+    "OBRIGATÓRIO", "Exemplo:", "CPF do beneficiário", "Matrícula do beneficiário", "OPCIONAL"
   ];
 
   return (
@@ -67,7 +64,7 @@ export const CadastroCartao = (): JSX.Element => {
                 <Nav />
                 <form onSubmit={(e) => e.preventDefault()} className="flex-1 px-8 py-6 min-w-0">
                   <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
-                    Cadastro de Cartão
+                    Estorno de Débito para Cartão
                   </h1>
                   <div className="grid grid-cols-1 gap-4 mb-4">
                     <div>
@@ -117,36 +114,21 @@ export const CadastroCartao = (): JSX.Element => {
                       )}
                     </div>
                     <div>
-                      <RequiredLabel>Nome Completo:</RequiredLabel>
+                      <RequiredLabel>Matrícula:</RequiredLabel>
                       <Input
-                        value={states.formData.nome || ""}
-                        onChange={e => handlers.handleDataInputChange('nome', e.target.value)}
+                        value={states.formData.matricula || ""}
+                        onChange={e => handlers.handleDataInputChange('matricula', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                         placeholder="João da Silva"
                       />
-                      {states.formErrors.nome && (
+                      {states.formErrors.matricula && (
                         <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.nome === "Required" ? "Campo Obrigatório" : states.formErrors.nome}
+                          {states.formErrors.matricula === "Required" ? "Campo Obrigatório" : states.formErrors.matricula}
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Valor do Crédito:</label>
-                      <Input
-                        type="number"
-                        value={states.formData.valorCredito || ""}
-                        onChange={e => handlers.handleDataInputChange('valorCredito', e.target.value)}
-                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="1000,00"
-                      />
-                      {states.formErrors.valorCredito && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.valorCredito === "Required" ? "Campo Obrigatório" : states.formErrors.valorCredito}
-                        </p>
-                      )}
-                    </div>
+                  <div className="grid grid-cols-1 gap-4 mb-8">
                     <div>
                       <label className="block text-sm font-medium mb-1">Departamento (Opcional):</label>
                       <Input
@@ -155,11 +137,6 @@ export const CadastroCartao = (): JSX.Element => {
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                         placeholder="Recursos Humanos"
                       />
-                      {states.formErrors.departamento && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.departamento}
-                        </p>
-                      )}
                     </div>
                   </div>
                   <div className="flex justify-end space-x-4 mb-6">
@@ -185,9 +162,9 @@ export const CadastroCartao = (): JSX.Element => {
                     onDownloadSample={handlers.handleDownloadSample}
                   />
                   <TemporaryDataTable
-                    headers={["CPF", "Nome Completo", "Valor do Crédito", "Departamento"]}
+                    headers={["CPF", "Matrícula", "Departamento"]}
                     data={states.tableData}
-                    dataKeys={["cpf", "nome", "valorCredito", "departamento"]}
+                    dataKeys={["cpf", "matricula", "departamento"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
                     onDownloadClick={handlers.handleDownload}

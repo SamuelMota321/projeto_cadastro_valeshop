@@ -1,7 +1,6 @@
 import z from "zod";
-import { capitalizeName, nameRegex, onlyNumbers } from "./basicFunctions";
+import { capitalizeName, nameRegex, onlyNumbers, onlyNumbersCredit } from "./basicFunctions";
 
-const onlyNumbersCredit = (value: string) => value.replace(/[^\d.,]/g, '');
 
 export const creditDebitSchema = z.object({
   cpf: z.string()
@@ -14,13 +13,13 @@ export const creditDebitSchema = z.object({
       message: "É necessário inserir o nome e sobrenome."
     })
     .transform(capitalizeName),
-  valorCredito: z.string()
+  valorDebito: z.string()
     .min(1)
     .transform(onlyNumbersCredit)
     .refine(value => {
       const num = Number(value.replace(/,/g, '.'));
       return num > 0;
-    }, { message: "Valor de crédito deve ser positivo." })
+    }, { message: "Valor de débito deve ser positivo." })
     .transform(value => {
       const num = Number(value.replace(/,/g, '.'));
       if (isNaN(num)) return "0,00";

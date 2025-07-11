@@ -1,0 +1,1 @@
+export { NovoCartaoNovoUsuario } from "./NovoCartaoNovoUsuario";

@@ -37,7 +37,7 @@ const pageConfigs = {
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos.", example: "Exemplo: 12345678900" },
     { field: "Nome Completo", rule: "Nome completo, sem abreviações.", example: "Exemplo: João da Silva" },
-    { field: "Valor de Crédito", rule: "Deve ser um número positivo. O uso de 'R$' é opcional. As casas decimais podem ser separados com  '.' (PONTO) ou ',' (VÍRGULA).", example: "Exemplos: R$ 1000,00 / 1000 / 1000.00 / 1000,00" },
+    { field: "Valor de Crédito", rule: "Deve ser um número positivo e sem uso de 'R$'. As casas decimais podem ser separados com  '.' (PONTO) ou ',' (VÍRGULA).", example: "Exemplos: 1000 / 1000.00 / 1000,00" },
     { field: "Departamento", rule: "Opcional. Somente letras e espaços.", example: "Exemplo: Recursos Humanos" }
   ]
 };
@@ -155,11 +155,6 @@ export const CreditoCartao = (): JSX.Element => {
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                         placeholder="Recursos Humanos"
                       />
-                      {states.formErrors.departamento && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.departamento}
-                        </p>
-                      )}
                     </div>
                   </div>
                   <div className="flex justify-end space-x-4 mb-6">

@@ -18,24 +18,24 @@ const pageConfigs = {
   headerMapping: {
     cpf: "CPF",
     nome: "Nome Completo",
-    valorCredito: "Valor de Crédito"
+    valorDebito: "Valor de Débito"
   },
   sampleDataGenerator: () => [
     ["", "PLANILHA PARA ESTORNO DE DÉBITO PARA CARTÃO"],
     [],
-    ["CPF", "Nome Completo", "Valor de Crédito",],
+    ["CPF", "Nome Completo", "Valor de Débito",],
     ["OBRIGATÓRIO", "OBRIGATÓRIO", "OBRIGATÓRIO"],
     [
       "CPF do beneficiário (11 dígitos)\nExemplo: 12345678900",
       "Nome completo do beneficiário\nExemplo: João da Silva",
-      "Valor de crédito (número)\nExemplo: 1000,00"
+      "Valor de débito (número)\nExemplo: 1000,00"
     ]
   ],
   downloadFileNamePrefix: "estorno_debito_cartao",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos.", example: "Exemplo: 12345678900" },
     { field: "Nome Completo", rule: "Nome completo, sem abreviações.", example: "Exemplo: João da Silva" },
-    { field: "Valor de Crédito", rule: "Deve ser um número positivo. O uso de 'R$' é opcional. As casas decimais podem ser separados com  '.' (PONTO) ou ',' (VÍRGULA).", example: "Exemplos: R$ 1000,00 / 1000 / 1000.00 / 1000,00" },
+    { field: "Valor de Débito", rule: "Deve ser um número positivo e sem uso de 'R$'. As casas decimais podem ser separados com  '.' (PONTO) ou ',' (VÍRGULA).", example: "Exemplos: 1000 / 1000.00 / 1000,00" },
   ]
 };
 
@@ -130,17 +130,17 @@ export const EstornoDebito = (): JSX.Element => {
                   </div>
                   <div className="grid grid-cols-1 gap-4 mb-8">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Valor do Crédito:</label>
+                      <label className="block text-sm font-medium mb-1">Valor do Débito:</label>
                       <Input
                         type="number"
-                        value={states.formData.valorCredito || ""}
-                        onChange={e => handlers.handleDataInputChange('valorCredito', e.target.value)}
+                        value={states.formData.valorDebito || ""}
+                        onChange={e => handlers.handleDataInputChange('valorDebito', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
                         placeholder="1000,00"
                       />
-                      {states.formErrors.valorCredito && (
+                      {states.formErrors.valorDebito && (
                         <p className="text-red-500 text-xs mt-1">
-                          {states.formErrors.valorCredito === "Required" ? "Campo Obrigatório" : states.formErrors.valorCredito}
+                          {states.formErrors.valorDebito === "Required" ? "Campo Obrigatório" : states.formErrors.valorDebito}
                         </p>
                       )}
                     </div>
@@ -168,9 +168,9 @@ export const EstornoDebito = (): JSX.Element => {
                     onDownloadSample={handlers.handleDownloadSample}
                   />
                   <TemporaryDataTable
-                    headers={["CPF", "Nome Completo", "Valor do Crédito", "Departamento"]}
+                    headers={["CPF", "Nome Completo", "Valor de Débito", "Departamento"]}
                     data={states.tableData}
-                    dataKeys={["cpf", "nome", "valorCredito", "departamento"]}
+                    dataKeys={["cpf", "nome", "valorDebito", "departamento"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
                     onDownloadClick={handlers.handleDownload}
