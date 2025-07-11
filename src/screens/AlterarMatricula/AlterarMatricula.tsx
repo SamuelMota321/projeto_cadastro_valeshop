@@ -59,7 +59,7 @@ export const AlterarMatricula = (): JSX.Element => {
               <div className="flex">
                 <Nav />
                 <form onSubmit={(e) => e.preventDefault()} className="flex-1 px-8 py-6 min-w-0">
-                  <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
+                  <h1 className="text-3xl font-normal text-center text-black mb-8 font-sans">
                     Alteração de Matrícula
                   </h1>
                   <div className="mb-6">

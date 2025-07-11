@@ -66,7 +66,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
               <div className="flex">
                 <Nav />
                 <form onSubmit={(e) => e.preventDefault()} className="flex-1 px-8 py-6 min-w-0">
-                  <h1 className="text-2xl font-normal text-center text-black mb-8 font-sans">
+                  <h1 className="text-3xl font-normal text-center text-black mb-8 font-sans">
                     Alterar status do cartão
                   </h1>
                   <div className="grid grid-cols-1 gap-4 mb-4">
@@ -82,7 +82,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                             {...inputProps}
                             type="text"
                             placeholder="000.000.0000.00-00"
-                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                            className="h-10 bg-[#F5F5F5] border-none rounded-md text-base"
                           />
                         )}
                       </InputMask>
@@ -102,7 +102,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                           {...inputProps}
                           type="text"
                           placeholder="000.000.000-00"
-                          className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                          className="h-10 bg-[#F5F5F5] border-none rounded-md text-base"
                         />
                       )}
                     </InputMask>
@@ -115,7 +115,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                       <Input
                         value={states.formData.nome || ""}
                         onChange={e => handlers.handleDataInputChange('nome', e.target.value)}
-                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                        className="h-10 bg-[#F5F5F5] border-none rounded-md text-base"
                         placeholder="João da Silva Santos"
                       />
                       {states.formErrors.nome && <p className="text-red-500 text-xs mt-1">{states.formErrors.nome === "Required" ? "Campo Obrigatório" : states.formErrors.nome}</p>}
@@ -128,7 +128,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                         onValueChange={value => handlers.handleDataInputChange('movimentacao', value)}
                       >
                         <SelectTrigger
-                          className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
+                          className="h-10 bg-[#F5F5F5] border-none rounded-md text-base"
                         >
                           <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
@@ -155,9 +155,9 @@ export const AlterarStatusCartao = (): JSX.Element => {
 
                   <div className="flex justify-end space-x-4 mb-6">
                     {states.editingIndex !== null && (
-                      <Button onClick={handlers.resetFormAndExitEditing} variant="outline" className="px-8 py-2 rounded-full font-normal text-sm">Cancelar</Button>
+                      <Button onClick={handlers.resetFormAndExitEditing} variant="outline" className="px-8 py-2 rounded-full font-normal text-base">Cancelar</Button>
                     )}
-                    <Button type="submit" onClick={handlers.handleRegisterOrUpdateClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm">
+                    <Button type="submit" onClick={handlers.handleRegisterOrUpdateClick} className="px-8 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-base">
                       {states.editingIndex !== null ? "Salvar Alterações" : "Registrar"}
                     </Button>
                   </div>

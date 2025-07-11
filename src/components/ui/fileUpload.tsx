@@ -150,7 +150,7 @@ export const FileUpload = ({ expectedHeaders, instructionalKeywords, onDataLoade
           Arraste seu arquivo ou clique para selecionar
         </p>
       )}
-      <p className="text-sm text-gray-500 font-sans">
+      <p className="text-base text-gray-500 font-sans">
         Formatos aceitos: CSV (.csv) ou XLSX (.xlsx)
       </p>
     </div>

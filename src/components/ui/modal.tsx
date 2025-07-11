@@ -23,13 +23,13 @@ export const Modal: React.FC<modalProps> = ({ isOpen, onSim, onNao }) => {
         <div className="flex justify-center space-x-6">
           <Button
             onClick={onNao}
-            className="px-10 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm"
+            className="px-10 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-base"
           >
             Não
           </Button>
           <Button
             onClick={onSim}
-            className="px-10 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-sm"
+            className="px-10 py-2 bg-gradient-to-r from-[#004075] to-[#00569E] hover:from-[#003060] hover:to-[#004080] text-white rounded-full font-normal text-base"
           >
             Sim
           </Button>

@@ -37,11 +37,11 @@ export const TemporaryDataTable = ({ headers, data, dataKeys, onRemoveItem, onEd
               {data.map((item, itemIndex) => (
                 <tr key={itemIndex}>
                   {dataKeys.map((key) => (
-                    <td key={`${itemIndex}-${key}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-sans">
+                    <td key={`${itemIndex}-${key}`} className="px-6 py-4 whitespace-nowrap text-base text-gray-800 font-sans">
                       {item[key]}
                     </td>
                   ))}
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-base font-medium space-x-4">
                     <button
                       onClick={() => {
                         onEditItem(itemIndex)
@@ -65,7 +65,7 @@ export const TemporaryDataTable = ({ headers, data, dataKeys, onRemoveItem, onEd
         </div>
       ) : (
         <div className="text-center py-8 px-4 border-2 border-dashed border-gray-200 rounded-lg">
-          <p className="text-sm text-gray-500">Nenhum dado adicionado ainda.</p>
+          <p className="text-base text-gray-500">Nenhum dado adicionado ainda.</p>
         </div>
       )}
 

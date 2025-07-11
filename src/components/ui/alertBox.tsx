@@ -38,10 +38,10 @@ export const AlertBox = ({ variant, title, messages, onClose }: AlertBoxProps) =
           {styles.icon}
         </div>
         <div className="ml-3">
-          <h3 className={`text-sm font-medium ${styles.titleText}`}>
+          <h3 className={`text-base font-medium ${styles.titleText}`}>
             {title}
           </h3>
-          <div className={`mt-2 text-sm ${styles.messageText}`}>
+          <div className={`mt-2 text-base ${styles.messageText}`}>
             <ul role="list" className="list-disc space-y-1 pl-5">
               {variant === 'error' ? messages.map((message, index) => (
                 <li key={index}>{message}</li>

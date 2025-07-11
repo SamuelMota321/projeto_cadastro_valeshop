@@ -57,7 +57,7 @@ export const Nav = (): JSX.Element => {
 
   return (
     <>
-      <nav className="w-[280px] bg-[#E5E5E5] min-h-[700px]">
+      <nav className="w-max[400px] w-[25%] bg-[#E5E5E5] min-h-[700px]">
         <div className="py-4">
           {menuItems.map((item, index) => {
             const isActive = location.pathname === item.link || (item.submenu && isSubmenuActive(item.submenu));
@@ -65,7 +65,7 @@ export const Nav = (): JSX.Element => {
             // Define o conteúdo do item de menu para evitar repetição
             const menuItemContent = (
               <div
-                className={`flex items-center justify-between px-4 py-3 text-sm transition-colors cursor-pointer ${isActive
+                className={`flex items-center justify-between px-4 py-3 text-base transition-colors cursor-pointer ${isActive
                     ? "bg-white rounded-lg shadow-sm"
                     : "hover:bg-gray-200 rounded-lg"
                   }`}
@@ -107,7 +107,7 @@ export const Nav = (): JSX.Element => {
                           <Link
                             key={subIndex}
                             to={subItem.link}
-                            className={`block px-4 py-2 text-sm ${isSubActive
+                            className={`block px-4 py-2 text-base ${isSubActive
                                 ? "text-blue-600 font-semibold"
                                 : "text-black hover:bg-gray-100"
                               }`}
