@@ -165,9 +165,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     const filename = `${contractResult.data.numeroContrato}_${downloadFileName}`;
     const dataToDownload = tableData.map(item => {
       const row: Record<string, any> = {};
-      const companyShape = (companySchema as z.ZodObject<any>).shape;
       const dataShape = (dataSchema as z.ZodObject<any>).shape;
-      Object.keys(companyShape).forEach(key => row[key] = item[key as keyof typeof item]);
       Object.keys(dataShape).forEach(key => row[headerMapping[key as keyof DataSchemaType]] = item[key as keyof typeof item]);
       return row;
     });
