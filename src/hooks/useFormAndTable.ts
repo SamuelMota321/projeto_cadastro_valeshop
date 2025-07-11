@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { z, ZodObject } from "zod";
 import { downloadAsCSV, downloadSampleCSV } from "../lib/utils";
+import { DownloadModalContext } from "../providers/modalProvider";
+
 
 type AnyZodObject = ZodObject<any, any, any>;
 
@@ -29,6 +31,8 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [successMessages, setSuccessMessages] = useState<string[]>([]);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const downloadModal = useContext(DownloadModalContext);
+
 
 
   const handleCompanyInputChange = (field: keyof CompanySchemaType, value: string) => {
@@ -82,7 +86,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
       setTableData(updatedData);
     } else {
 
-      setTableData(prevData => [...prevData, newEntry]);
+      setTableData(prevData => [newEntry, ...prevData]);
     }
     resetFormAndExitEditing();
   };
@@ -163,13 +167,26 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     }
 
     const filename = `${contractResult.data.numeroContrato}_${downloadFileName}`;
+
+    //código com o headerMapping no download
+    // const dataToDownload = tableData.map(item => {
+    //   const row: Record<string, any> = {};
+    //   const dataShape = (dataSchema as z.ZodObject<any>).shape;
+    //   Object.keys(dataShape).forEach(key => row[headerMapping[key as keyof DataSchemaType]] = item[key as keyof typeof item]);
+    //   return row;
+    // });
+
+    //código ser o headerMapping no download
     const dataToDownload = tableData.map(item => {
-      const row: Record<string, any> = {};
       const dataShape = (dataSchema as z.ZodObject<any>).shape;
-      Object.keys(dataShape).forEach(key => row[headerMapping[key as keyof DataSchemaType]] = item[key as keyof typeof item]);
-      return row;
+      const rowValues = Object.keys(dataShape).map(key => item[key as keyof typeof item]);
+      return rowValues;
     });
     downloadAsCSV(dataToDownload, filename);
+
+    if (downloadModal) {
+      downloadModal.showDownloadModal(`${filename}.csv`);
+    }
   };
 
   return {

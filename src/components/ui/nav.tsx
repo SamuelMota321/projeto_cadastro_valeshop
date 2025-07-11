@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Modal } from "./modal";
+import { FlowModal } from "./modal";
 
 export const Nav = (): JSX.Element => {
   const location = useLocation();
@@ -62,12 +62,11 @@ export const Nav = (): JSX.Element => {
           {menuItems.map((item, index) => {
             const isActive = location.pathname === item.link || (item.submenu && isSubmenuActive(item.submenu));
 
-            // Define o conteúdo do item de menu para evitar repetição
             const menuItemContent = (
               <div
                 className={`flex items-center justify-between px-4 py-3 text-base transition-colors cursor-pointer ${isActive
-                    ? "bg-white rounded-lg shadow-sm"
-                    : "hover:bg-gray-200 rounded-lg"
+                  ? "bg-white rounded-lg shadow-sm"
+                  : "hover:bg-gray-200 rounded-lg"
                   }`}
               >
                 <span className={`text-left text-black font-normal font-sans`}>
@@ -108,8 +107,8 @@ export const Nav = (): JSX.Element => {
                             key={subIndex}
                             to={subItem.link}
                             className={`block px-4 py-2 text-base ${isSubActive
-                                ? "text-blue-600 font-semibold"
-                                : "text-black hover:bg-gray-100"
+                              ? "text-blue-600 font-semibold"
+                              : "text-black hover:bg-gray-100"
                               }`}
                           >
                             {subItem.text}
@@ -126,7 +125,7 @@ export const Nav = (): JSX.Element => {
         </div>
       </nav>
 
-      <Modal
+      <FlowModal
         isOpen={isModalOpen}
         onSim={handleSim}
         onNao={handleNao}
