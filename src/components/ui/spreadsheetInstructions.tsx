@@ -23,7 +23,7 @@ export const SpreadsheetInstructions = ({ instructions, onDownloadSample }: Spre
           variant="outline"
           onClick={onDownloadSample}
         >
-          Baixar Planilha Exemplo
+          Preencher Planilha modelo
         </Button>
       </div>
 
