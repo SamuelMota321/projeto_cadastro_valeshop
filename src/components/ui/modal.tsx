@@ -53,7 +53,6 @@ interface DownloadCompleteModalProps {
   filename: string;
 }
 
-const CNPJ = "15.112.115/4815-12";
 const EMAIL = "administrativo@valeshop.com.br";
 
 export const DownloadModal: React.FC<DownloadCompleteModalProps> = ({ isOpen, onClose, filename,  }) => {
@@ -89,7 +88,6 @@ export const DownloadModal: React.FC<DownloadCompleteModalProps> = ({ isOpen, on
               <strong className="text-blue-600 font-normal break-all">{filename}</strong>
             </li>
             <li>Envie o arquivo para o e-mail administrativo</li>
-            <li>Inclua o CNPJ da empresa no e-mail</li>
           </ol>
         </div>
 
@@ -98,16 +96,6 @@ export const DownloadModal: React.FC<DownloadCompleteModalProps> = ({ isOpen, on
           <div className="flex items-center justify-between mt-1 p-2 pl-3 bg-gray-50 rounded-md border">
             <span className="text-sm text-gray-900">{EMAIL}</span>
             <button onClick={() => handleCopy(EMAIL)} title="Copiar e-mail" className="p-1 text-gray-500 hover:text-gray-800 rounded hover:bg-gray-200 transition-colors">
-              <ClipboardCopy size={16} />
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-3">
-          <label className="text-xs font-medium text-gray-500">CNPJ para incluir no e-mail:</label>
-          <div className="flex items-center justify-between mt-1 p-2 pl-3 bg-gray-50 rounded-md border">
-            <span className="text-sm text-gray-900">{CNPJ}</span>
-            <button onClick={() => handleCopy(CNPJ)} title="Copiar CNPJ" className="p-1 text-gray-500 hover:text-gray-800 rounded hover:bg-gray-200 transition-colors">
               <ClipboardCopy size={16} />
             </button>
           </div>
