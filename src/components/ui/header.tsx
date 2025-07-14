@@ -10,7 +10,7 @@ export const Header = (): JSX.Element => {
       />
       <div className='flex items-center ml-4 flex-col w-full'>
         <h1 className="text-white text-3xl font-bold ml-4">
-          Sistema de Formulários
+          Coleta de Dados
         </h1>
         <p className='text-white text-2xl ml-4'>Gerador de CSV</p>
       </div>
