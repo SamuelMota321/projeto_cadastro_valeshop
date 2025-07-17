@@ -92,7 +92,6 @@ export const InstructionsModal: React.FC<InstrunctionsModalProps> = ({ isOpen, o
               <strong className="text-blue-600 font-normal break-all">{filename}</strong>
             </li>
             <li>Envie o arquivo para o e-mail administrativo</li>
-            <li>Inclua o CNPJ da empresa no e-mail</li>
           </ol>
         </div>
 
