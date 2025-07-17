@@ -28,7 +28,7 @@ const pageConfigs = {
       "Nova matrícula do funcionário\n(11 dígitos)\nExemplo: 00987654321"
     ]
   ],
-  downloadFileNamePrefix: "Alterar_Matricula",
+  fileNamePrefix: "Alterar_Matricula",
   instructions: [
     { field: "Matrícula Antiga", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900" },
     { field: "Matrícula Nova", rule: "Deve conter 11 dígitos", example: "Exemplo: 00987654321" }
@@ -41,7 +41,7 @@ export const AlterarMatricula = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const cardStatusInstructionKeywords = [
@@ -135,7 +135,7 @@ export const AlterarMatricula = (): JSX.Element => {
                     dataKeys={["matriculaAntiga", "matriculaNova"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>

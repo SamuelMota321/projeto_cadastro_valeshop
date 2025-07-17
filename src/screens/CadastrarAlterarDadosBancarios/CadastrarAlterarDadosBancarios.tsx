@@ -34,7 +34,7 @@ const pageConfigs = {
       "Dígito da conta (1 dígito)\nExemplo: 0"
     ]
   ],
-  downloadFileNamePrefix: "Cadastrar_Alterar_Dados_Bancarios",
+  fileNamePrefix: "Cadastrar_Alterar_Dados_Bancarios",
   instructions: [
     { field: "N° do Banco", rule: "Deve conter 3 dígitos.", example: "Exemplo: 001" },
     { field: "N° da Agência", rule: "Deve conter 4 dígitos.", example: "Exemplo: 1234" },
@@ -50,7 +50,7 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -201,7 +201,7 @@ export const CadastrarAlterarDadosBancarios = (): JSX.Element => {
                     dataKeys={["banco", "agencia", "digitoAgencia", "conta", "digitoConta"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>

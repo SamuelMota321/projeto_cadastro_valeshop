@@ -26,7 +26,7 @@ const pageConfigs = {
       "Nome do departamento\nExemplo: Recursos Humanos"
     ]
   ],
-  downloadFileNamePrefix: "Novo_Cadastro_Referencia",
+  fileNamePrefix: "Novo_Cadastro_Referencia",
   instructions: [
     { field: "Nome do Departamento", rule: "Somente letras e espaços.", example: "Exemplo: Recursos Humanos" }
   ]
@@ -38,7 +38,7 @@ export const NovoCadastroReferencia = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -126,7 +126,7 @@ export const NovoCadastroReferencia = (): JSX.Element => {
                     dataKeys={["departamento"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>

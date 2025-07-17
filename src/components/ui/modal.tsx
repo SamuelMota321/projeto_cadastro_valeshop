@@ -1,5 +1,5 @@
 import React from "react";
-import { ClipboardCopy } from 'lucide-react';
+// import { ClipboardCopy } from 'lucide-react';
 import { Card } from "./card";
 import { Button } from "./button";
 
@@ -47,23 +47,23 @@ export const FlowModal: React.FC<modalProps> = ({ isOpen, onSim, onNao }) => {
 };
 
 
-interface DownloadCompleteModalProps {
+interface InstrunctionsModalProps {
   isOpen: boolean;
   onClose: () => void;
   filename: string;
 }
 
-const CNPJ = "15.112.115/4815-12";
-const EMAIL = "administrativo@valeshop.com.br";
+// const CNPJ = "15.112.115/4815-12";
+// const EMAIL = "administrativo@valeshop.com.br";
 
-export const DownloadModal: React.FC<DownloadCompleteModalProps> = ({ isOpen, onClose, filename,  }) => {
+export const InstructionsModal: React.FC<InstrunctionsModalProps> = ({ isOpen, onClose, filename }) => {
   if (!isOpen) {
     return null;
   }
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
+  // const handleCopy = (text: string) => {
+  //   navigator.clipboard.writeText(text);
+  // };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -75,12 +75,15 @@ export const DownloadModal: React.FC<DownloadCompleteModalProps> = ({ isOpen, on
             </svg>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Download Concluído!</h2>
-            <p className="text-sm text-gray-500">Arquivo CSV gerado com sucesso</p>
+            <h2 className="text-lg font-semibold text-gray-900">Dados de {filename} enviados com sucesso</h2>
           </div>
         </div>
 
         <div className="border-t border-gray-200 pt-4">
+          <p className="text-base font-semibold text-gray-800"> Caso queria fazer mais registros basta fechar este modal e trocar de página</p>
+        </div>
+
+        {/* <div className="border-t border-gray-200 pt-4">
           <h3 className="text-base font-semibold text-gray-800">Próximos passos:</h3>
           <ol className="list-decimal list-inside mt-2 text-sm text-gray-600 space-y-2">
             <li>
@@ -111,7 +114,7 @@ export const DownloadModal: React.FC<DownloadCompleteModalProps> = ({ isOpen, on
               <ClipboardCopy size={16} />
             </button>
           </div>
-        </div>
+        </div> */}
 
         <div className="mt-6 flex justify-end">
           <Button onClick={onClose} className="px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold text-sm">

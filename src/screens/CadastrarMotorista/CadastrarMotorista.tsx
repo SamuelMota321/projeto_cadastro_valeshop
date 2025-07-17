@@ -44,7 +44,7 @@ const pageConfigs = {
       "Categoria da CNH\nExemplo: B"
     ]
   ],
-  downloadFileNamePrefix: "Cadastrar_Motorista",
+  fileNamePrefix: "Cadastrar_Motorista",
   instructions: [
     { field: "Matrícula", rule: "Deve conter 11 dígitos.", example: "Exemplo: 12345678900" },
     { field: "Nome Completo", rule: "Nome completo, sem abreviações.", example: "Exemplo: João da Silva" },
@@ -61,7 +61,7 @@ export const CadastrarMotorista = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -260,7 +260,7 @@ export const CadastrarMotorista = (): JSX.Element => {
                     dataKeys={["matricula", "nome", "cpf", "validadeCnh", "numeroCnh", "categoriaCnh"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>

@@ -1,7 +1,9 @@
 import { useContext, useState } from "react";
 import { z, ZodObject } from "zod";
-import { downloadAsCSV, downloadSampleCSV } from "../lib/utils";
-import { DownloadModalContext } from "../providers/modalProvider";
+import { /*downloadAsCSV, */ downloadSampleCSV } from "../lib/utils";
+import { InstructionsModalContext } from "../providers/modalProvider";
+import { api } from "../lib/api";
+import { isAxiosError } from "axios";
 
 
 type AnyZodObject = ZodObject<any, any, any>;
@@ -11,7 +13,7 @@ interface UseFormAndTableProps<T extends AnyZodObject, C extends AnyZodObject> {
   companySchema: C;
   headerMapping: Record<keyof z.infer<T>, string>;
   sampleDataGenerator: (companyData: Partial<z.infer<C>>) => string[][];
-  downloadFileName: string;
+  fileName: string;
 }
 
 export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>({
@@ -19,7 +21,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
   companySchema,
   headerMapping,
   sampleDataGenerator,
-  downloadFileName,
+  fileName,
 }: UseFormAndTableProps<T, C>) => {
   type DataSchemaType = z.infer<T>;
   type CompanySchemaType = z.infer<C>;
@@ -31,7 +33,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [successMessages, setSuccessMessages] = useState<string[]>([]);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
-  const downloadModal = useContext(DownloadModalContext);
+  const instructionsModal = useContext(InstructionsModalContext);
 
 
 
@@ -149,45 +151,101 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
 
   const handleDownloadSample = () => {
     const sample = sampleDataGenerator(companyData);
-    downloadSampleCSV(sample, `exemplo_${downloadFileName}`);
+    downloadSampleCSV(sample, `exemplo_${fileName}`);
   };
 
-  const handleDownload = () => {
-    const contractResult = companySchema.safeParse(companyData);
-    if (!contractResult.success) {
+  const handleSubmit = async () => {
+    const companyResult = companySchema.safeParse(companyData);
+    if (!companyResult.success) {
       const newErrors: Record<string, string | undefined> = {};
-      contractResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+      companyResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
       setFormErrors(newErrors);
-      alert("Por favor, preencha o N° do contrato antes de baixar.");
+      alert("Por favor, preencha o N° do contrato antes de enviar para a API.");
       return;
     }
+
     if (tableData.length === 0) {
-      alert("Não há dados na tabela para baixar.");
+      alert("Não há dados na tabela para enviar.");
       return;
     }
 
-    const filename = `${contractResult.data.numeroContrato}_${downloadFileName}`;
-
-    //código com o headerMapping no download
-    // const dataToDownload = tableData.map(item => {
-    //   const row: Record<string, any> = {};
-    //   const dataShape = (dataSchema as z.ZodObject<any>).shape;
-    //   Object.keys(dataShape).forEach(key => row[headerMapping[key as keyof DataSchemaType]] = item[key as keyof typeof item]);
-    //   return row;
-    // });
-
-    //código ser o headerMapping no download
-    const dataToDownload = tableData.map(item => {
+    const dataToSend = tableData.map(item => {
       const dataShape = (dataSchema as z.ZodObject<any>).shape;
-      const rowValues = Object.keys(dataShape).map(key => item[key as keyof typeof item]);
-      return rowValues;
+      const row: Record<string, any> = {};
+      Object.keys(dataShape).forEach(key => {
+        row[key] = item[key as keyof typeof item];
+      });
+      return row;
     });
-    downloadAsCSV(dataToDownload, filename);
 
-    if (downloadModal) {
-      downloadModal.showDownloadModal(`${filename}.csv`);
+    const payload = {
+      contrato: companyResult.data.numeroContrato,
+      op: fileName,
+      value: dataToSend
+    };
+
+    console.log("Enviando para API:", JSON.stringify(payload, null, 2));
+
+    try {
+      const response = await api.post("", payload);
+      if (instructionsModal) {
+        instructionsModal.showInstructionsModal(`${fileName}.csv`);
+      }
+
+    } catch (error) {
+      setErrorMessages(['Erro no envio de dados, tente novamente']);
+      if (isAxiosError(error)) {
+        if (error.response) {
+          const { status, data } = error.response;
+          const errorMessage = data?.message || JSON.stringify(data);
+
+          alert(`Erro ao enviar dados: ${status} - ${errorMessage}`);
+          console.error(`Erro da API (Status ${status}):`, data);
+        } else {
+          alert('Erro de comunicação. Verifique a conexão.');
+          console.error('Erro de rede Axios:', error.message);
+        }
+        alert('Ocorreu um erro de comunicação. Verifique sua conexão e tente novamente.');
+      }
     }
   };
+
+  // const handleDownload = () => {
+  //   const contractResult = companySchema.safeParse(companyData);
+  //   if (!contractResult.success) {
+  //     const newErrors: Record<string, string | undefined> = {};
+  //     contractResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
+  //     setFormErrors(newErrors);
+  //     alert("Por favor, preencha o N° do contrato antes de baixar.");
+  //     return;
+  //   }
+  //   if (tableData.length === 0) {
+  //     alert("Não há dados na tabela para baixar.");
+  //     return;
+  //   }
+
+  //   const filename = `${contractResult.data.numeroContrato}_${downloadFileName}`;
+
+  //   //código com o headerMapping no download
+  //   // const dataToDownload = tableData.map(item => {
+  //   //   const row: Record<string, any> = {};
+  //   //   const dataShape = (dataSchema as z.ZodObject<any>).shape;
+  //   //   Object.keys(dataShape).forEach(key => row[headerMapping[key as keyof DataSchemaType]] = item[key as keyof typeof item]);
+  //   //   return row;
+  //   // });
+
+  //   //código ser o headerMapping no download
+  //   const dataToDownload = tableData.map(item => {
+  //     const dataShape = (dataSchema as z.ZodObject<any>).shape;
+  //     const rowValues = Object.keys(dataShape).map(key => item[key as keyof typeof item]);
+  //     return rowValues;
+  //   });
+  //   downloadAsCSV(dataToDownload, filename);
+
+  //   if (instruModal) {
+  //     instruModal.showinstruModal(`${filename}.csv`);
+  //   }
+  // };
 
   return {
     states: { companyData, formData, formErrors, tableData, editingIndex, successMessages, errorMessages },
@@ -200,7 +258,8 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
       handleRemoveItem,
       handleDataLoadedFromFile,
       handleDownloadSample,
-      handleDownload,
+      handleSubmit,
+      // handleDownload,
       setErrorMessages,
       setSuccessMessages,
     },

@@ -1,17 +1,17 @@
 import { createContext, useState } from "react";
-import { DownloadModal } from "../components/ui/modal";
+import { InstructionsModal } from "../components/ui/modal";
 
-interface DownloadModalContextType {
-  showDownloadModal: (filename: string) => void;
+interface InstructionsModalContextType {
+  showInstructionsModal: (filename: string) => void;
 }
-export const DownloadModalContext = createContext<DownloadModalContextType | undefined>(undefined);
+export const InstructionsModalContext = createContext<InstructionsModalContextType | undefined>(undefined);
 
 
-export const DownloadModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const InstructionsModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [filename, setFilename] = useState('');
 
-  const showDownloadModal = (name: string) => {
+  const showInstructionsModal = (name: string) => {
     setFilename(name);
     setModalOpen(true);
   };
@@ -21,9 +21,9 @@ export const DownloadModalProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <DownloadModalContext.Provider value={{ showDownloadModal }}>
+    <InstructionsModalContext.Provider value={{ showInstructionsModal }}>
       {children}
-      <DownloadModal isOpen={isModalOpen} onClose={closeModal} filename={filename} />
-    </DownloadModalContext.Provider>
+      <InstructionsModal isOpen={isModalOpen} onClose={closeModal} filename={filename} />
+    </InstructionsModalContext.Provider>
   );
 };

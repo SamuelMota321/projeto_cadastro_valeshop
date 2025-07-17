@@ -32,7 +32,7 @@ const pageConfigs = {
       "Informe o tipo de movimentação: Ativar, Cancelar, Inativar, Bloquear"
     ]
   ],
-  downloadFileNamePrefix: "Alterar_Status_Cartao",
+  fileNamePrefix: "Alterar_Status_Cartao",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
     { field: "Nome Completo", rule: "Nome completo, sem abreviações.", example: "Exemplo: Joao da Silva Santos" },
@@ -46,7 +46,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const cardStatusInstructionKeywords = [
@@ -183,7 +183,7 @@ export const AlterarStatusCartao = (): JSX.Element => {
                     dataKeys={["cpf", "nome", "movimentacao"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>

@@ -28,7 +28,7 @@ const pageConfigs = {
       "Nome do departamento\nExemplo: Recursos Humanos"
     ]
   ],
-  downloadFileNamePrefix: "Alterar_Referencia_Usuario",
+  fileNamePrefix: "Alterar_Referencia_Usuario",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
     { field: "Nome do Departamento", rule: "Informe o nome completo do departamento.", example: "Exemplo: Recursos Humanos" }
@@ -41,7 +41,7 @@ export const AlterarReferencia = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const cardStatusInstructionKeywords = [
@@ -177,7 +177,7 @@ export const AlterarReferencia = (): JSX.Element => {
                     dataKeys={["cpf", "departamento"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>

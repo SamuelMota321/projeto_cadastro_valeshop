@@ -32,7 +32,7 @@ const pageConfigs = {
       "Nome completo da mãe do funcionário\nExemplo: Maria da Silva Santos"
     ]
   ],
-  downloadFileNamePrefix: "Cadastrar_Usuario",
+  fileNamePrefix: "Cadastrar_Usuario",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
     { field: "Nome Completo", rule: "Escreva o nome completo, sem abreviações ou caracteres especiais.", example: "Exemplo: Joao da Silva Santos" },
@@ -49,7 +49,7 @@ export const CadastrarUsuario = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -195,7 +195,7 @@ export const CadastrarUsuario = (): JSX.Element => {
                     dataKeys={["cpf", "nome", "telefone", "email", "nascimento", "nomeMae"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>

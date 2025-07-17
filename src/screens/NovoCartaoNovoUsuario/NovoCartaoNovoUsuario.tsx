@@ -31,7 +31,7 @@ const pageConfigs = {
       "Departamento do beneficiário\nExemplo: Vendas"
     ]
   ],
-  downloadFileNamePrefix: "estorno_debito_cartao",
+  fileNamePrefix: "Novo_Cartao_Novo_Usuario",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos.", example: "Exemplo: 12345678900" },
     { field: "Matrícula", rule: "Matrícula do beneficiário, sem abreviações.", example: "Exemplo: 123456" },
@@ -45,7 +45,7 @@ export const NovoCartaoNovoUsuario = (): JSX.Element => {
     companySchema,
     headerMapping: pageConfigs.headerMapping,
     sampleDataGenerator: pageConfigs.sampleDataGenerator,
-    downloadFileName: pageConfigs.downloadFileNamePrefix,
+    fileName: pageConfigs.fileNamePrefix,
   });
 
   const expectedHeadersForUpload = Object.values(pageConfigs.headerMapping);
@@ -167,7 +167,7 @@ export const NovoCartaoNovoUsuario = (): JSX.Element => {
                     dataKeys={["cpf", "matricula", "departamento"]}
                     onRemoveItem={handlers.handleRemoveItem}
                     onEditItem={handlers.handleEditItem}
-                    onDownloadClick={handlers.handleDownload}
+                    onSubmit={handlers.handleSubmit}
                   />
                 </form>
               </div>
