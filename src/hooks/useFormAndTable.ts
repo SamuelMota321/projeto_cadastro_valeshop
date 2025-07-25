@@ -187,7 +187,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     console.log("Enviando para API:", JSON.stringify(payload, null, 2));
 
     try {
-      const response = await api.post("", payload);
+      const { } = await api.post("/?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_CntFKvxAIi8TURt-968mOfTXGZhbyOWZMDLSU0iqGQ", payload);
       if (instructionsModal) {
         instructionsModal.showInstructionsModal(`${fileName}.csv`);
       }

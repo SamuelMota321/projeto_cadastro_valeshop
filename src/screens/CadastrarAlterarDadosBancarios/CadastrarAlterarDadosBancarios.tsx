@@ -34,7 +34,7 @@ const pageConfigs = {
       "Dígito da conta (1 dígito)\nExemplo: 0"
     ]
   ],
-  fileNamePrefix: "Cadastrar_Alterar_Dados_Bancarios",
+  fileNamePrefix: "Alterar_Usuario",
   instructions: [
     { field: "N° do Banco", rule: "Deve conter 3 dígitos.", example: "Exemplo: 001" },
     { field: "N° da Agência", rule: "Deve conter 4 dígitos.", example: "Exemplo: 1234" },

@@ -32,7 +32,7 @@ const pageConfigs = {
       "Nome completo da mãe do funcionário\nExemplo: Maria da Silva Santos"
     ]
   ],
-  fileNamePrefix: "Cadastrar_Usuario",
+  fileNamePrefix: "Alterar_Usuario",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
     { field: "Nome Completo", rule: "Escreva o nome completo, sem abreviações ou caracteres especiais.", example: "Exemplo: Joao da Silva Santos" },

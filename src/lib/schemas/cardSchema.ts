@@ -22,7 +22,7 @@ export const cardSchema = z.object({
   .transform(value => {
     const num = Number(value.replace(/,/g, '.'));
     if (isNaN(num)) return "0,00";
-    return num.toFixed(2).replace('.', ',');
+    return num.toFixed(2);
   }),
   departamento: z.string().optional(),
 });

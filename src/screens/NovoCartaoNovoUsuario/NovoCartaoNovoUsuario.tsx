@@ -64,7 +64,7 @@ export const NovoCartaoNovoUsuario = (): JSX.Element => {
                 <Nav />
                 <form onSubmit={(e) => e.preventDefault()} className="flex-1 px-8 py-6 min-w-0">
                   <h1 className="text-3xl font-normal text-center text-black mb-8 font-sans">
-                    Estorno de Débito para Cartão
+                    Novo Usuário e Novo Crédito
                   </h1>
                   <div className="grid grid-cols-1 gap-4 mb-4">
                     <div>
@@ -119,7 +119,8 @@ export const NovoCartaoNovoUsuario = (): JSX.Element => {
                         value={states.formData.matricula || ""}
                         onChange={e => handlers.handleDataInputChange('matricula', e.target.value)}
                         className="h-10 bg-[#F5F5F5] border-none rounded-md text-sm"
-                        placeholder="João da Silva"
+                        placeholder="12345678900"
+                        maxLength={11}
                       />
                       {states.formErrors.matricula && (
                         <p className="text-red-500 text-xs mt-1">

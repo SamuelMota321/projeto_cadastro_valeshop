@@ -28,7 +28,7 @@ const pageConfigs = {
       "Nome do departamento\nExemplo: Recursos Humanos"
     ]
   ],
-  fileNamePrefix: "Alterar_Referencia_Usuario",
+  fileNamePrefix: "Alterar_Usuario",
   instructions: [
     { field: "CPF", rule: "Deve conter 11 dígitos", example: "Exemplo: 12345678900 ou 123.456.789-00" },
     { field: "Nome do Departamento", rule: "Informe o nome completo do departamento.", example: "Exemplo: Recursos Humanos" }
