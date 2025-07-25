@@ -59,7 +59,8 @@ Os arquivos compilados serão gerados na pasta dist/.
 ## Estrutura do Projeto
 A estrutura do diretório `src` é organizada da seguinte forma:
 
-`src/
+```Bash
+src/
 ├── App.tsx             # Componente principal da aplicação e configuração de rotas
 ├── components/         # Componentes reutilizáveis da UI (botões, cards, inputs, etc.)
 │   └── ui/             # Componentes de interface de usuário genéricos
@@ -112,7 +113,9 @@ A estrutura do diretório `src` é organizada da seguinte forma:
 │   ├── EstornoDebito/
 │   ├── NovoCadastroReferencia/
 │   └── NovoCartaoNovoUsuario/
-└── vite-env.d.ts       # Declarações de tipo para o ambiente Vite`
+└── vite-env.d.ts       # Declarações de tipo para o ambiente Vite
+```
+
 
 
 ## Funcionalidades Principais
