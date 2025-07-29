@@ -36,6 +36,19 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
   const instructionsModal = useContext(InstructionsModalContext);
 
 
+  const isDuplicate = (
+    newItem: DataSchemaType & CompanySchemaType,
+    data: (DataSchemaType & CompanySchemaType)[],
+    editIndex: number | null = null
+  ): boolean => {
+    const newItemString = JSON.stringify(newItem);
+    return data.some((item, index) => {
+      if (editIndex !== null && index === editIndex) {
+        return false;
+      }
+      return JSON.stringify(item) === newItemString;
+    });
+  };
 
   const handleCompanyInputChange = (field: keyof CompanySchemaType, value: string) => {
     setCompanyData(prev => ({ ...prev, [field]: value }));
@@ -65,6 +78,8 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
   };
 
   const handleRegisterOrUpdateClick = async () => {
+    setSuccessMessages([]);
+    setErrorMessages([]);
     const companyResult = companySchema.safeParse(companyData);
     const dataResult = dataSchema.safeParse(formData);
 
@@ -82,13 +97,19 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
 
     const newEntry = { ...companyResult.data, ...dataResult.data };
 
+    if (isDuplicate(newEntry, tableData, editingIndex)) {
+      setErrorMessages(["Erro: Este registro já existe na tabela."]);
+      return;
+    }
+
     if (editingIndex !== null) {
       const updatedData = [...tableData];
       updatedData[editingIndex] = newEntry;
       setTableData(updatedData);
+      setSuccessMessages(["Registro atualizado com sucesso!"]);
     } else {
-
       setTableData(prevData => [newEntry, ...prevData]);
+      setSuccessMessages(["Registro adicionado com sucesso!"]);
     }
     resetFormAndExitEditing();
   };
@@ -103,6 +124,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
 
   const handleRemoveItem = (indexToRemove: number) => {
     setTableData(prevData => prevData.filter((_, index) => index !== indexToRemove));
+    setSuccessMessages(["Registro removido."]);
   };
 
   const handleDataLoadedFromFile = (data: any[]) => {
@@ -119,6 +141,7 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     setSuccessMessages([]);
     setErrorMessages([]);
     const newErrorMessages: string[] = [];
+    const duplicateRowMessages: string[] = [];
     const validRows: (DataSchemaType & CompanySchemaType)[] = [];
 
     data.forEach((row, index) => {
@@ -129,14 +152,21 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
 
       const dataResult = dataSchema.safeParse(rowData);
       if (dataResult.success) {
-        validRows.push({ ...validCompanyData, ...dataResult.data });
+        const newRow = { ...validCompanyData, ...dataResult.data };
+
+        // ADDED: Check for duplicates against existing table data AND newly added valid rows
+        if (isDuplicate(newRow, tableData) || isDuplicate(newRow, validRows)) {
+          duplicateRowMessages.push(`Linha ${index + 6}: Dados duplicados foram ignorados.`);
+        } else {
+          validRows.push(newRow);
+        }
       } else {
         const errorDetails = dataResult.error.issues.map(issue => {
           const fieldName = issue.path[0] as keyof typeof headerMapping;
           const friendlyFieldName = headerMapping[fieldName] || fieldName;
           return `Campo "${friendlyFieldName as string}": ${issue.message}`;
         }).join('; ');
-        newErrorMessages.push(`Linha ${index + 2}: ${errorDetails}`);
+        newErrorMessages.push(`Linha ${index + 6}: ${errorDetails}`);
       }
     });
 
@@ -144,8 +174,9 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
       setTableData(prevData => [...prevData, ...validRows]);
       setSuccessMessages([`Total de ${validRows.length} registros válidos foram importados.`]);
     }
-    if (newErrorMessages.length > 0) {
-      setErrorMessages(newErrorMessages);
+
+    if (newErrorMessages.length > 0 || duplicateRowMessages.length > 0) {
+      setErrorMessages([...newErrorMessages, ...duplicateRowMessages]);
     }
   };
 
@@ -210,43 +241,6 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
     }
   };
 
-  // const handleDownload = () => {
-  //   const contractResult = companySchema.safeParse(companyData);
-  //   if (!contractResult.success) {
-  //     const newErrors: Record<string, string | undefined> = {};
-  //     contractResult.error.issues.forEach(issue => { newErrors[issue.path[0]] = issue.message; });
-  //     setFormErrors(newErrors);
-  //     alert("Por favor, preencha o N° do contrato antes de baixar.");
-  //     return;
-  //   }
-  //   if (tableData.length === 0) {
-  //     alert("Não há dados na tabela para baixar.");
-  //     return;
-  //   }
-
-  //   const filename = `${contractResult.data.numeroContrato}_${downloadFileName}`;
-
-  //   //código com o headerMapping no download
-  //   // const dataToDownload = tableData.map(item => {
-  //   //   const row: Record<string, any> = {};
-  //   //   const dataShape = (dataSchema as z.ZodObject<any>).shape;
-  //   //   Object.keys(dataShape).forEach(key => row[headerMapping[key as keyof DataSchemaType]] = item[key as keyof typeof item]);
-  //   //   return row;
-  //   // });
-
-  //   //código ser o headerMapping no download
-  //   const dataToDownload = tableData.map(item => {
-  //     const dataShape = (dataSchema as z.ZodObject<any>).shape;
-  //     const rowValues = Object.keys(dataShape).map(key => item[key as keyof typeof item]);
-  //     return rowValues;
-  //   });
-  //   downloadAsCSV(dataToDownload, filename);
-
-  //   if (instruModal) {
-  //     instruModal.showinstruModal(`${filename}.csv`);
-  //   }
-  // };
-
   return {
     states: { companyData, formData, formErrors, tableData, editingIndex, successMessages, errorMessages },
     handlers: {
@@ -259,7 +253,6 @@ export const useFormAndTable = <T extends AnyZodObject, C extends AnyZodObject>(
       handleDataLoadedFromFile,
       handleDownloadSample,
       handleSubmit,
-      // handleDownload,
       setErrorMessages,
       setSuccessMessages,
     },

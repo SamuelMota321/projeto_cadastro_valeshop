@@ -1,12 +1,15 @@
 import z from "zod";
-import { capitalizeName, nameRegex, onlyNumbers } from "./basicFunctions";
+import { capitalizeName, nameRegex, onlyNumbers, validCPF } from "./basicFunctions";
 
 const movimentacaoRegex = /^(Ativar|Cancelar|Inativar|Bloquear)$/i;
 
 export const alterCardStatusSchema = z.object({
   cpf: z.string()
     .transform(onlyNumbers)
-    .pipe(z.string().length(11, { message: "CPF deve conter 11 dígitos." })),
+    .pipe(z.string().length(11, { message: "CPF deve conter 11 dígitos." }))
+    .refine((cpfValue) => validCPF(cpfValue), {
+      message: "CPF inválido.", 
+    }),
   nome: z.string()
     .min(1)
     .regex(nameRegex, { message: "Nome deve conter apenas letras e espaços." })
@@ -19,4 +22,5 @@ export const alterCardStatusSchema = z.object({
     .regex(movimentacaoRegex, { message: "Movimentação deve ser: Ativar, Cancelar, Inativar ou Bloquear." })
     .transform(capitalizeName),
 });
+
 export type alterCardStatusSchemaType = z.infer<typeof alterCardStatusSchema>;
