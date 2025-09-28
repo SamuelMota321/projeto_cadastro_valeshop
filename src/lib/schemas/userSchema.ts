@@ -1,10 +1,13 @@
 import { z } from 'zod';
-import { capitalizeName, dateRegex, nameRegex, onlyNumbers } from './basicFunctions';
+import { capitalizeName, dateRegex, nameRegex, onlyNumbers, validCPF } from './basicFunctions';
 
 export const userSchema = z.object({
   cpf: z.string()
     .transform(onlyNumbers)
-    .pipe(z.string().length(11, { message: "CPF deve conter 11 dígitos." })),
+    .pipe(z.string().length(11, { message: "CPF deve conter 11 dígitos." }))
+    .refine((cpfValue) => validCPF(cpfValue), {
+      message: "CPF inválido.",
+    }),
   nome: z.string()
     .min(1)
     .regex(nameRegex, { message: "Nome deve conter apenas letras e espaços." })

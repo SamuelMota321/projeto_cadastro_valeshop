@@ -1,10 +1,11 @@
 import { z } from 'zod';
-// import { onlyNumbers } from './basicFunctions';
+
+const contractregex = (value: string) =>  value.replace(/\-/g, '_');  
 
 const textRegex =  (value: string) => value.replace(/\-/g, '_');
 export const companySchema = z.object({
   numeroContrato: z.string()
-    .transform(textRegex)
+    .transform(contractregex)
     .pipe(z.string().length(18, { message: "N° do contrato deve ter 14 dígitos." })),
 });
 

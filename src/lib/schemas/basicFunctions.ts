@@ -11,3 +11,33 @@ export const capitalizeName = (name: string) => {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };
+
+export const validCPF = (cpf: string): boolean => {
+cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
+
+  if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false; // Verifica tamanho e sequências repetidas
+
+  let sum = 0;
+  let rest;
+
+  // Validação do primeiro dígito verificador
+  for (let i = 1; i <= 9; i++) {
+    sum = sum + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+  }
+  rest = (sum * 10) % 11;
+
+  if (rest === 10 || rest === 11) rest = 0;
+  if (rest !== parseInt(cpf.substring(9, 10))) return false;
+
+  sum = 0;
+  // Validação do segundo dígito verificador
+  for (let i = 1; i <= 10; i++) {
+    sum = sum + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+  }
+  rest = (sum * 10) % 11;
+
+  if (rest === 10 || rest === 11) rest = 0;
+  if (rest !== parseInt(cpf.substring(10, 11))) return false;
+
+  return true;
+}
